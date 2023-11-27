@@ -2,10 +2,14 @@ package top.kirisamemarisa.sparkcipher.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.ToString;
 
+/**
+ * @Author Marisa
+ * @Description 用户实体类
+ * @Date 2023/11/27
+ */
 @Data
 @ToString
 public class User {
