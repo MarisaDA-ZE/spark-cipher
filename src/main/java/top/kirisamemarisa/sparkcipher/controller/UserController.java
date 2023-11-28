@@ -4,9 +4,13 @@ import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
+import top.kirisamemarisa.sparkcipher.util.AES256Encryption;
 import top.kirisamemarisa.sparkcipher.util.IdUtil;
+import top.kirisamemarisa.sparkcipher.util.MD5Util;
+import top.kirisamemarisa.sparkcipher.util.SaltGenerator;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +25,20 @@ public class UserController {
 
     @Resource
     private IUserService userService;
+
+    @Resource
+    private AES256Encryption aesUtil;
+
+    @GetMapping("/test")
+    public MrsResult<?> test() {
+        String s = "原神,启动!";
+        String encrypt = aesUtil.encrypt(s);
+        System.out.println(encrypt);
+        String decrypt = aesUtil.decrypt(encrypt);
+        System.out.println(decrypt);
+
+        return MrsResult.ok();
+    }
 
     @GetMapping("/list")
     public MrsResult<?> list() {
@@ -37,9 +55,24 @@ public class UserController {
      */
     @PostMapping("/add")
     public MrsResult<?> add(@RequestBody User user) {
-        user.setId(IdUtil.nextOne());
+        System.out.println("创建用户: " + user);
+        // 校验用户名、密码、其它参数有则校验
+        boolean b1 = user.verifyUserName();
+        boolean b2 = user.verifyPassword();
+        if (!b1 || !b2 || !user.verifyNullable()) return MrsResult.failed("校验未通过,请检查参数!");
+
+        String salt = SaltGenerator.generateSalt();
+        String pwd = user.getPassword();
+        pwd = MD5Util.md5(pwd + salt);
+        String snowflakeId = IdUtil.nextIdOne();
+        user.setId(snowflakeId);
         user.setLevel(1);
+        user.setPassword(pwd);
+        user.setSalt(salt);
+        user.setCreateTime(new Date());
+        user.setCreateBy(snowflakeId);
         boolean save = userService.save(user);
         return save ? MrsResult.ok() : MrsResult.failed();
     }
+
 }

@@ -2,12 +2,12 @@ package top.kirisamemarisa.sparkcipher.util;
 
 /**
  * @Author Marisa
- * @Description IdUtil.描述
+ * @Description 雪花ID工具类
  * @Date 2023/11/27
  */
 public class IdUtil {
-    // 开始时间戳（2023-11-27）
-    private final static long twepoch = 1701079655653L;
+    // 开始时间戳（2023-01-01）
+    private final static long twepoch = 1672502400000L;
 
     // 机器id所占的位数
     private final static long workerIdBits = 5L;
@@ -43,10 +43,10 @@ public class IdUtil {
 
     public void SnowflakeIdWorker(long workerId, long datacenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
-            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
+            throw new IllegalArgumentException(String.format("工作ID不能大于 %d 或小于0", maxWorkerId));
         }
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
-            throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
+            throw new IllegalArgumentException(String.format("datacenter ID不能大于 %d 或小于0", maxDatacenterId));
         }
         this.workerId = workerId;
         this.datacenterId = datacenterId;
@@ -56,7 +56,7 @@ public class IdUtil {
         long timestamp = timeGen();
 
         if (timestamp < lastTimestamp) {
-            throw new RuntimeException(String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
+            throw new RuntimeException(String.format("时间后退,拒绝生成ID %d毫秒", lastTimestamp - timestamp));
         }
 
         if (lastTimestamp == timestamp) {
@@ -73,7 +73,7 @@ public class IdUtil {
         return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift) | (workerId << workerIdShift) | sequence;
     }
 
-    public static String nextOne() {
+    public static String nextIdOne() {
         IdUtil idUtil = new IdUtil();
         long l = idUtil.nextId();
         return String.valueOf(l);
