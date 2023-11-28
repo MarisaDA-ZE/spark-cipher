@@ -65,14 +65,14 @@ public class Record {
     // 手机号校验
     public boolean verifyPhone() {
         // 手机号码正则
-        String regex = "/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$/";
+        String regex = "(?:(?:\\+|00)86)?1(?:(?:3[\\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\\d])|(?:9[1589]))\\d{8}";
         return this.regVerify(regex, this.getPhone());
     }
 
     // 邮箱校验
     public boolean verifyEmail() {
         //Email正则
-        String regex = "/^([A-Za-z0-9_\\-.])+@([A-Za-z0-9_\\-.])+\\.([A-Za-z]{2,4})$/";
+        String regex = "([A-Za-z0-9_\\-.])+@([A-Za-z0-9_\\-.])+\\.([A-Za-z]{2,4})";
         return this.regVerify(regex, this.getEmail());
     }
 
