@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
-import top.kirisamemarisa.sparkcipher.util.AES256Encryption;
-import top.kirisamemarisa.sparkcipher.util.IdUtil;
-import top.kirisamemarisa.sparkcipher.util.MD5Util;
+import top.kirisamemarisa.sparkcipher.util.AES256Utils;
+import top.kirisamemarisa.sparkcipher.util.IdUtils;
+import top.kirisamemarisa.sparkcipher.util.MD5Utils;
 import top.kirisamemarisa.sparkcipher.util.SaltGenerator;
 
 import javax.annotation.Resource;
@@ -27,7 +27,7 @@ public class UserController {
     private IUserService userService;
 
     @Resource
-    private AES256Encryption aesUtil;
+    private AES256Utils aesUtil;
 
     @GetMapping("/test")
     public MrsResult<?> test() {
@@ -63,8 +63,8 @@ public class UserController {
 
         String salt = SaltGenerator.generateSalt();
         String pwd = user.getPassword();
-        pwd = MD5Util.md5(pwd + salt);
-        String snowflakeId = IdUtil.nextIdOne();
+        pwd = MD5Utils.md5(pwd + salt);
+        String snowflakeId = IdUtils.nextIdOne();
         user.setId(snowflakeId);
         user.setLevel(1);
         user.setPassword(pwd);

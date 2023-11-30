@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.Record;
 import top.kirisamemarisa.sparkcipher.service.IRecordService;
-import top.kirisamemarisa.sparkcipher.util.AES256Encryption;
-import top.kirisamemarisa.sparkcipher.util.IdUtil;
+import top.kirisamemarisa.sparkcipher.util.AES256Utils;
+import top.kirisamemarisa.sparkcipher.util.IdUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -28,7 +28,7 @@ public class RecordController {
     private IRecordService recordService;
 
     @Resource
-    private AES256Encryption aesUtil;
+    private AES256Utils aesUtil;
 
     @GetMapping("/test")
     public MrsResult<?> test() {
@@ -46,8 +46,8 @@ public class RecordController {
      * @param userId .
      * @return .
      */
-    @GetMapping("/getByUserId")
-    public MrsResult<?> getByUserId(String userId) {
+    @GetMapping("/getRecordByUserId")
+    public MrsResult<?> getRecordByUserId(String userId) {
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         List<Record> list = recordService.list(queryWrapper);
@@ -69,11 +69,11 @@ public class RecordController {
                 record.setPassword(aesUtil.decrypt(record.getPassword()));
 
             // 手机号解密
-            if (StringUtils.isNotBlank(record.getPhone()) && record.verifyPhone())
+            if (StringUtils.isNotBlank(record.getPhone()))
                 record.setPhone(aesUtil.decrypt(record.getPhone()));
 
             // 邮箱解密
-            if (StringUtils.isNotBlank(record.getEmail()) && record.verifyEmail())
+            if (StringUtils.isNotBlank(record.getEmail()))
                 record.setEmail(aesUtil.decrypt(record.getEmail()));
 
             // URL解密
@@ -103,7 +103,7 @@ public class RecordController {
         if (StringUtils.isBlank(record.getUserId())) return MrsResult.failed("用户ID错误!");
 
         // 设置ID
-        String snowflakeId = IdUtil.nextIdOne();
+        String snowflakeId = IdUtils.nextIdOne();
         record.setId(snowflakeId);
 
         // 标题加密

@@ -5,6 +5,16 @@ spring:
     url: jdbc:mysql://47.109.66.127:3306/spark-cipher?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: marisa
     password: $pwdByMySQL6845.
+  redis:
+    host: 47.109.66.127
+    port: 6379
+    password: $pwdByEcs-redis6795.
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
 
 # 数据库名称
 project:

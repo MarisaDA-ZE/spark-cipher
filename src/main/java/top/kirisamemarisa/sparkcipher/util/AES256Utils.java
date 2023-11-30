@@ -16,12 +16,12 @@ import java.util.Base64;
 
 /**
  * @Author Marisa
- * @Description AES256Encryption.描述
+ * @Description AES256加密工具类
  * @Date 2023/11/28
  */
 
 @Component
-public class AES256Encryption {
+public class AES256Utils {
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final int KEY_SIZE = 256;
     private static final int IV_SIZE = 16;

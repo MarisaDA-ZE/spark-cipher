@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  * @Description MD5工具类
  * @Date 2023/11/28
  */
-public class MD5Util {
+public class MD5Utils {
 
     public static String md5(String input) {
         try {
@@ -25,7 +25,7 @@ public class MD5Util {
     }
 
     public static void main(String[] args) {
-        String input = "测试字符串";
+        String input = "marisa@123wZ8NCs";
         String md5 = md5(input);
         System.out.println("MD5加密后的字符串： " + md5);
     }

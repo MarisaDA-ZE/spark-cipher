@@ -5,7 +5,7 @@ package top.kirisamemarisa.sparkcipher.util;
  * @Description 雪花ID工具类
  * @Date 2023/11/27
  */
-public class IdUtil {
+public class IdUtils {
     // 开始时间戳（2023-01-01）
     private final static long twepoch = 1672502400000L;
 
@@ -74,7 +74,7 @@ public class IdUtil {
     }
 
     public static String nextIdOne() {
-        IdUtil idUtil = new IdUtil();
+        IdUtils idUtil = new IdUtils();
         long l = idUtil.nextId();
         return String.valueOf(l);
     }
@@ -92,7 +92,7 @@ public class IdUtil {
     }
 
     public static void main(String[] args) {
-        IdUtil idWorker = new IdUtil();
+        IdUtils idWorker = new IdUtils();
         for (int i = 0; i < 10; i++) {
             long id = idWorker.nextId();
             System.out.println(id);
