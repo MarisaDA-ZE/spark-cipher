@@ -1,14 +1,18 @@
 package top.kirisamemarisa.sparkcipher.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.Record;
+import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IRecordService;
 import top.kirisamemarisa.sparkcipher.util.AES256Utils;
 import top.kirisamemarisa.sparkcipher.util.IdUtils;
+import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -30,6 +34,9 @@ public class RecordController {
     @Resource
     private AES256Utils aesUtil;
 
+    @Resource
+    private SecurityUtils securityUtils;
+
     @GetMapping("/test")
     public MrsResult<?> test() {
         String s = "原神,启动！！！！";
@@ -38,6 +45,26 @@ public class RecordController {
         String decrypt = aesUtil.decrypt(encrypt);
         System.out.println(decrypt);
         return MrsResult.ok();
+    }
+
+    /**
+     * 分页查询用户对应的记录
+     *
+     * @param current 当前页
+     * @param size    每页长度
+     * @return .
+     */
+    @GetMapping("/getRecordsList")
+    public MrsResult<?> getRecordsList(@RequestParam(defaultValue = "1") Integer current,
+                                       @RequestParam(defaultValue = "10") Integer size) {
+        User authUser = securityUtils.getAuthUser();
+        String uid = authUser.getId();
+        QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("USER_ID", uid);
+        IPage<Record> page = recordService.page(new Page<>(current, size), queryWrapper);
+        page.getRecords().forEach(this::decryptField);
+        page.getRecords().forEach(System.out::println);
+        return MrsResult.ok(page);
     }
 
     /**
@@ -51,43 +78,50 @@ public class RecordController {
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USER_ID", userId);
         List<Record> list = recordService.list(queryWrapper);
-        for (Record record : list) {
-            // ---数据库层级的数据解密
-            // 标题解密
-            if (StringUtils.isNotBlank(record.getTitle()))
-                record.setTitle(aesUtil.decrypt(record.getTitle()));
-
-            // 账户名解密
-            if (StringUtils.isNotBlank(record.getAccount()))
-                record.setAccount(aesUtil.decrypt(record.getAccount()));
-
-            // 用户名解密
-            if (StringUtils.isNotBlank(record.getUserName()))
-                record.setUserName(aesUtil.decrypt(record.getUserName()));
-
-            // 密码解密
-            if (StringUtils.isNotBlank(record.getPassword()))
-                record.setPassword(aesUtil.decrypt(record.getPassword()));
-
-            // 手机号解密
-            if (StringUtils.isNotBlank(record.getPhone()))
-                record.setPhone(aesUtil.decrypt(record.getPhone()));
-
-            // 邮箱解密
-            if (StringUtils.isNotBlank(record.getEmail()))
-                record.setEmail(aesUtil.decrypt(record.getEmail()));
-
-            // URL解密
-            if (StringUtils.isNotBlank(record.getUrl()))
-                record.setUrl(aesUtil.decrypt(record.getUrl()));
-
-            // 备注信息解密
-            if (StringUtils.isNotBlank(record.getRemark()))
-                record.setRemark(aesUtil.decrypt(record.getRemark()));
-            // ---到此
-        }
+        list.forEach(this::decryptField);
         list.forEach(System.out::println);
         return MrsResult.ok(list);
+    }
+
+    /**
+     * 数据库层级的字段解码
+     *
+     * @param record .
+     */
+    private void decryptField(Record record) {
+        // ---数据库层级的数据解密
+        // 标题解密
+        if (StringUtils.isNotBlank(record.getTitle()))
+            record.setTitle(aesUtil.decrypt(record.getTitle()));
+
+        // 账户名解密
+        if (StringUtils.isNotBlank(record.getAccount()))
+            record.setAccount(aesUtil.decrypt(record.getAccount()));
+
+        // 用户名解密
+        if (StringUtils.isNotBlank(record.getUserName()))
+            record.setUserName(aesUtil.decrypt(record.getUserName()));
+
+        // 密码解密
+        if (StringUtils.isNotBlank(record.getPassword()))
+            record.setPassword(aesUtil.decrypt(record.getPassword()));
+
+        // 手机号解密
+        if (StringUtils.isNotBlank(record.getPhone()))
+            record.setPhone(aesUtil.decrypt(record.getPhone()));
+
+        // 邮箱解密
+        if (StringUtils.isNotBlank(record.getEmail()))
+            record.setEmail(aesUtil.decrypt(record.getEmail()));
+
+        // URL解密
+        if (StringUtils.isNotBlank(record.getUrl()))
+            record.setUrl(aesUtil.decrypt(record.getUrl()));
+
+        // 备注信息解密
+        if (StringUtils.isNotBlank(record.getRemark()))
+            record.setRemark(aesUtil.decrypt(record.getRemark()));
+        // ---到此
     }
 
 

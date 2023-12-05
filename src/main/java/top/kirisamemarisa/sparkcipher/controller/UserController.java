@@ -42,7 +42,7 @@ public class UserController {
     }
 
     /**
-     * 添加一个用户
+     * 添加一个用户（注册）
      *
      * @param user .
      * @return .

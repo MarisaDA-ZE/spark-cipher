@@ -5,13 +5,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
+import top.kirisamemarisa.sparkcipher.service.IUserService;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 import top.kirisamemarisa.sparkcipher.util.TokenUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.TimeUnit;
+
+import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
 
 
 /**
@@ -23,7 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginHandlerInterceptor implements HandlerInterceptor {
 
     @Resource
-    private RedisTemplate<String, String> redisTemplate;
+    private IUserService userService;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 在Controller之前调用
@@ -52,7 +59,7 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
         // token 拉黑操作(还没做)
 
 
-        String loggedTk = redisTemplate.opsForValue().get(uid + ".token");
+        String loggedTk = (String) redisTemplate.opsForValue().get(uid + ".token");
         SecurityUtils.stk.set(token);
 
         // 登录信息不为空 将之前的用户挤下线
@@ -60,6 +67,11 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
         // 校验登录信息 ip地址和操作设备必须和登录时保持一致
         // token与记录的不一致
 
+        // 最后如果上述所有校验都没有问题，则刷新redis中该用户的过期时间
+        User dbUser = userService.getById(uid);
+        redisTemplate.opsForValue().set(uid, dbUser, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
+        // 更新token
+        redisTemplate.opsForValue().set(uid + ".token", token, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
         return true;
     }
 }
