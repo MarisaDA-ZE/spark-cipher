@@ -32,7 +32,7 @@ public class RecordController {
 
     @GetMapping("/test")
     public MrsResult<?> test() {
-        String s = "原神,启动!";
+        String s = "原神,启动！！！！";
         String encrypt = aesUtil.encrypt(s);
         System.out.println(encrypt);
         String decrypt = aesUtil.decrypt(encrypt);
