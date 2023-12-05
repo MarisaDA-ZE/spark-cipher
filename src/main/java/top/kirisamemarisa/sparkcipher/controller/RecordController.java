@@ -49,9 +49,10 @@ public class RecordController {
     @GetMapping("/getRecordByUserId")
     public MrsResult<?> getRecordByUserId(String userId) {
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("USER_ID", userId);
         List<Record> list = recordService.list(queryWrapper);
         for (Record record : list) {
+            // ---数据库层级的数据解密
             // 标题解密
             if (StringUtils.isNotBlank(record.getTitle()))
                 record.setTitle(aesUtil.decrypt(record.getTitle()));
@@ -83,7 +84,7 @@ public class RecordController {
             // 备注信息解密
             if (StringUtils.isNotBlank(record.getRemark()))
                 record.setRemark(aesUtil.decrypt(record.getRemark()));
-
+            // ---到此
         }
         list.forEach(System.out::println);
         return MrsResult.ok(list);
@@ -127,12 +128,12 @@ public class RecordController {
         else record.setPassword(null);
 
         // 手机号加密
-        if (StringUtils.isNotBlank(record.getPhone()) && record.verifyPhone())
+        if (StringUtils.isNotBlank(record.getPhone()))
             record.setPhone(aesUtil.encrypt(record.getPhone()));
         else record.setPhone(null);
 
         // 邮箱加密
-        if (StringUtils.isNotBlank(record.getEmail()) && record.verifyEmail())
+        if (StringUtils.isNotBlank(record.getEmail()))
             record.setEmail(aesUtil.encrypt(record.getEmail()));
         else record.setEmail(null);
 

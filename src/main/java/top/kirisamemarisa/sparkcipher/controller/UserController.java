@@ -4,10 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
-import top.kirisamemarisa.sparkcipher.util.AES256Utils;
-import top.kirisamemarisa.sparkcipher.util.IdUtils;
-import top.kirisamemarisa.sparkcipher.util.MD5Utils;
-import top.kirisamemarisa.sparkcipher.util.SaltGenerator;
+import top.kirisamemarisa.sparkcipher.util.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -25,17 +22,14 @@ public class UserController {
 
     @Resource
     private IUserService userService;
-
     @Resource
-    private AES256Utils aesUtil;
+    private SecurityUtils securityUtils;
+
 
     @GetMapping("/test")
     public MrsResult<?> test() {
-        String s = "原神,启动!";
-        String encrypt = aesUtil.encrypt(s);
-        System.out.println(encrypt);
-        String decrypt = aesUtil.decrypt(encrypt);
-        System.out.println(decrypt);
+        User authUser = securityUtils.getAuthUser();
+        System.out.println(authUser);
 
         return MrsResult.ok();
     }

@@ -1,5 +1,6 @@
 package top.kirisamemarisa.sparkcipher.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
+import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
+
 /**
  * @Author Marisa
  * @Description ILoginServiceImpl.描述
@@ -24,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class ILoginServiceImpl implements ILoginService {
 
-    // token在redis中的过期时间
-    private static final long TIMEOUT = 30 * 60;
 
     @Resource
     private IUserService userService;
@@ -47,10 +48,15 @@ public class ILoginServiceImpl implements ILoginService {
         String pwd = MD5Utils.md5(p + dbUser.getSalt());
         if (!dbUser.getPassword().equals(pwd)) throw new UnauthorizedException("用户名密码错误！");
         System.out.println("登录成功！");
+        String uid = dbUser.getId();
         long now = System.currentTimeMillis();
-        String token = TokenUtils.sign(account, loginUser.getLoginMac(), String.valueOf(now));
+        String token = TokenUtils.sign(uid, loginUser.getLoginMac(), String.valueOf(now));
+        String dbJson = JSONObject.toJSONString(dbUser);
+        System.out.println(dbJson);
+        // 保存用户
+        redisTemplate.opsForValue().set(uid, dbUser, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
         // 保存token
-        redisTemplate.opsForValue().set(dbUser.getId() + ".token", token, TIMEOUT, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(uid + ".token", token, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
         return token;
     }
 }

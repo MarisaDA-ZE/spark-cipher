@@ -1,11 +1,12 @@
 package top.kirisamemarisa.sparkcipher.interceptor;
+
 import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
-import top.kirisamemarisa.sparkcipher.util.MD5Utils;
+import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 import top.kirisamemarisa.sparkcipher.util.TokenUtils;
 
 import javax.annotation.Resource;
@@ -35,24 +36,24 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         String token = request.getHeader("Authorization");
-
-
         // 请求头未携带token
         if (StringUtils.isBlank(token) || StringUtils.isBlank(token.replaceAll("Bearer ", ""))) {
             throw new UnauthorizedException("token不存在！");
         }
         token = token.replaceAll("Bearer ", "");
-        String account = TokenUtils.decryptToken(token, "account");
+        // 用户ID
+        String uid = TokenUtils.decryptToken(token, "account");
 
         // token校验失败(已过期)或者取不出账号名
         // System.out.println("账号: " + account + ", 校验: " + JwtUtil.verify(token));
-        if (!TokenUtils.verify(token) || StringUtils.isBlank(account)) {
-            throw new UnauthorizedException("token已过期");
+        if (!TokenUtils.verify(token) || StringUtils.isBlank(uid)) {
+            throw new UnauthorizedException("token已过期！");
         }
+        // token 拉黑操作(还没做)
 
-        // 检查token是否已被拉黑
-        String md5Tk = MD5Utils.md5(token);
-        String loggedUserInfo = redisTemplate.opsForValue().get(md5Tk);
+
+        String loggedTk = redisTemplate.opsForValue().get(uid + ".token");
+        SecurityUtils.stk.set(token);
 
         // 登录信息不为空 将之前的用户挤下线
         // 检查是否用户登录

@@ -8,13 +8,15 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
+
+import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
 
 /**
- * JWT生成token
+ * @Author Marisa
+ * @Description JWT生成token
+ * @Date 2023/11/28
  */
 public class TokenUtils {
-    public static final int EXPIRE_TIME = 30;                   // 设置签名过期时间(分钟)
 
     // "Kirisame.MarisaDA☆ZE"的MD5值
     public static final String TOKEN_SECRET = "680445a7e4f5ab6a428828893e2f3c36";    // 设置签名私钥
@@ -54,7 +56,7 @@ public class TokenUtils {
             // 私钥和加密算法
             Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
             Calendar now = Calendar.getInstance();
-            now.add(Calendar.MINUTE, EXPIRE_TIME);  //当前时间 + 过期分钟
+            now.add(Calendar.MINUTE, TOKEN_EXPIRE_TIME);  //当前时间 + 过期分钟
             Date expireDate = now.getTime();        //Calendar转Date
             //设置JWT生效时间
             Date nowDate = new Date();              //系统当前时间
