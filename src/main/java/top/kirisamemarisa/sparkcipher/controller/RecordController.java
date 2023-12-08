@@ -10,7 +10,7 @@ import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.Record;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IRecordService;
-import top.kirisamemarisa.sparkcipher.util.AES256Utils;
+import top.kirisamemarisa.sparkcipher.util.encrypto.aes.AES256Utils;
 import top.kirisamemarisa.sparkcipher.util.IdUtils;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 
@@ -23,8 +23,8 @@ import java.util.List;
  * @Description 用户服务控制层
  * @Date 2023/11/27
  **/
-@RestController
 @CrossOrigin
+@RestController
 @RequestMapping("/record")
 public class RecordController {
 

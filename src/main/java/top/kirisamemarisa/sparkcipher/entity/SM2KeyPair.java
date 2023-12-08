@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.util.sm2;
+package top.kirisamemarisa.sparkcipher.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

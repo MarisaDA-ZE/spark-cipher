@@ -1,5 +1,7 @@
-# 数据源配置
+server:
+  port: 8001
 spring:
+  # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://47.109.66.127:3306/spark-cipher?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
@@ -37,10 +39,9 @@ mybatis-plus:
       logic-delete-value: 0
       logic-not-delete-value: 1
       logic-delete-field: deleted
-server:
-  port: 8080
 
-  # AES256 密钥
 mrs:
+  enable-encrypt-link: true # 是否启动全局加密传输
+  # AES256 密钥
   secret-key: CWOPE7iin6a9rMhI7tJus4Fh0uHBt6VEMkqsIYUlnMs=
   secret-iv: OIPCSsv76Vl1FsQSc68XmA==

@@ -98,7 +98,7 @@ public class User {
     // 密码校验
     public boolean verifyPassword() {
         // 至少6个字符，至少1个大写字母，1个小写字母和1个数字：
-        String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z-$_.\\d]{6,}";
+        String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z-!@#&*$_.\\d]{6,}";
         return this.regVerify(regex, this.getPassword());
     }
 

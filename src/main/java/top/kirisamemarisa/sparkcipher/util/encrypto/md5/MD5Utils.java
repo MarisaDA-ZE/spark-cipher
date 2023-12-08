@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.util;
+package top.kirisamemarisa.sparkcipher.util.encrypto.md5;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +25,7 @@ public class MD5Utils {
     }
 
     public static void main(String[] args) {
-        String input = "marisa@123wZ8NCs";
+        String input = "Marisa@123wZ8NCs";
         String md5 = md5(input);
         System.out.println("MD5加密后的字符串： " + md5);
     }

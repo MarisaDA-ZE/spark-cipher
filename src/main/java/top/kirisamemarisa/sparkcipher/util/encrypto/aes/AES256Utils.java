@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.util;
+package top.kirisamemarisa.sparkcipher.util.encrypto.aes;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

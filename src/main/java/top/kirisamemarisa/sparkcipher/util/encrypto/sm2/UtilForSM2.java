@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.util.sm2;
+package top.kirisamemarisa.sparkcipher.util.encrypto.sm2;
 
 import java.math.BigInteger;
 

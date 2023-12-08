@@ -1,19 +1,20 @@
-package top.kirisamemarisa.sparkcipher.util.sm2;
+package top.kirisamemarisa.sparkcipher.util.encrypto.sm2;
 
-import top.kirisamemarisa.sparkcipher.util.sm2.SM2KeyPair;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECPoint;
+import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
+
 /**
- * @Author Marisa
- * @Description SM2工具类
- * @Date 2023/11/29
+ * @author Marisa
+ * @description SM2工具类
+ * @date 2022/11/10
  */
 public class SM2Utils {
 

@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.util.sm2;
+package top.kirisamemarisa.sparkcipher.util.encrypto.sm2;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.digests.SM3Digest;
@@ -6,12 +6,6 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECPoint;
 
-
-/**
- * @Author Marisa
- * @Description Cipher.描述
- * @Date 2023/11/29
- */
 import java.math.BigInteger;
 
 /**

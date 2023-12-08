@@ -5,18 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import top.kirisamemarisa.sparkcipher.entity.LoginUser;
+import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.NotFoundException;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
-import top.kirisamemarisa.sparkcipher.util.MD5Utils;
+import top.kirisamemarisa.sparkcipher.util.encrypto.md5.MD5Utils;
 import top.kirisamemarisa.sparkcipher.util.TokenUtils;
+import top.kirisamemarisa.sparkcipher.util.encrypto.sm2.SM2Utils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
+import static top.kirisamemarisa.sparkcipher.common.Constants.KEYPAIR_EXPIRE_TIME;
 import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
 
 /**
@@ -57,6 +60,9 @@ public class ILoginServiceImpl implements ILoginService {
         redisTemplate.opsForValue().set(uid, dbUser, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
         // 保存token
         redisTemplate.opsForValue().set(uid + ".token", token, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
+        // 生成服务端密钥对并保存到redis
+        SM2KeyPair keyPair = SM2Utils.generateKeyPair();
+        redisTemplate.opsForValue().set(uid + ".skp", keyPair, KEYPAIR_EXPIRE_TIME, TimeUnit.SECONDS);
         return token;
     }
 }

@@ -42,6 +42,8 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
+        // 放行所有options请求
+        if ("OPTIONS".equals(request.getMethod())) return true;
         String token = request.getHeader("Authorization");
         // 请求头未携带token
         if (StringUtils.isBlank(token) || StringUtils.isBlank(token.replaceAll("Bearer ", ""))) {

@@ -1,5 +1,4 @@
-package top.kirisamemarisa.sparkcipher.util.sm2;
-
+package top.kirisamemarisa.sparkcipher.util.encrypto.sm2;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
@@ -12,20 +11,21 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
- * @Author Marisa
- * @Description SM2.描述
- * @Date 2023/11/29
+ * @author Marisa
+ * @description SM2.描述
+ * @date 2022/11/10
  */
+
 public class SM2 {
 
     //国密参数
     public static String[] ecc_param = {
             "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF",
             "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC",
-            "28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DBCC414D940E93",
+            "28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93",
             "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123",
-            "32C4AE2C1F1981195F9904466A39C9948FE30BFF2660BE1715A4589334C74C7",
-            "BC3736A2F4F6779C59BDC36B692153D0A9877CC62A474002DF32E52139F0A0"
+            "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7",
+            "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0"
     };
 
     public static SM2 Instance() {
@@ -91,4 +91,3 @@ public class SM2 {
         this.ecc_key_pair_generator.init(ecc_ecgenparam);
     }
 }
-

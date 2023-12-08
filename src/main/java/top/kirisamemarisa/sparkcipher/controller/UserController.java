@@ -5,6 +5,7 @@ import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
 import top.kirisamemarisa.sparkcipher.util.*;
+import top.kirisamemarisa.sparkcipher.util.encrypto.md5.MD5Utils;
 
 import javax.annotation.Resource;
 import java.util.Date;
