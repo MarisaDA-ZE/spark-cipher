@@ -1,6 +1,7 @@
 package top.kirisamemarisa.sparkcipher.aop.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import top.kirisamemarisa.sparkcipher.aop.SM2Crypto;
 import top.kirisamemarisa.sparkcipher.aop.enums.CRYPTO_TYPE;
+import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
@@ -20,6 +22,7 @@ import top.kirisamemarisa.sparkcipher.util.encrypto.sm2.SM2Utils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 
 /**
@@ -46,6 +49,7 @@ public class CryptoAspect {
      * @return returning .
      * @throws Throwable .
      */
+    @SuppressWarnings("rawtypes")
     @Around("@annotation(cryptoData)")
     public Object cryptoData(ProceedingJoinPoint joinPoint, SM2Crypto cryptoData) throws Throwable {
         // 根据配置文件决定是否加载加密模块
@@ -65,11 +69,24 @@ public class CryptoAspect {
                 args[i] = decrypt(text);
             }
         }
+        System.out.println(Arrays.toString(args));
         Object result = joinPoint.proceed(args);
+        System.out.println("返回值: " + result);
         // 加密
         if (value == CRYPTO_TYPE.ENCRYPT && !ObjectUtils.isEmpty(result)) {
-            String text = result.toString();
-            result = encrypt(text);
+            // 返回值是纯字符串转JSON后加密返回
+            if (result instanceof String) {
+                String text = JSONObject.toJSONString(result);
+                return encrypt(text);
+            }
+            // 返回值是MrsResult对象时只对data加密
+            if (result instanceof MrsResult) {
+                MrsResult<Object> mrsResult = (MrsResult) result;
+                String text = JSONObject.toJSONString(mrsResult.getData());
+                String encryptText = encrypt(text);
+                mrsResult.setData(encryptText);
+                return mrsResult;
+            }
         }
         return result;
     }

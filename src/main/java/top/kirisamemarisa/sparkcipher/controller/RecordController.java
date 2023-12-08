@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import top.kirisamemarisa.sparkcipher.aop.SM2Crypto;
+import top.kirisamemarisa.sparkcipher.aop.enums.CRYPTO_TYPE;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.Record;
 import top.kirisamemarisa.sparkcipher.entity.User;
@@ -54,6 +56,7 @@ public class RecordController {
      * @param size    每页长度
      * @return .
      */
+    @SM2Crypto(CRYPTO_TYPE.ENCRYPT)
     @GetMapping("/getRecordsList")
     public MrsResult<?> getRecordsList(@RequestParam(defaultValue = "1") Integer current,
                                        @RequestParam(defaultValue = "10") Integer size) {

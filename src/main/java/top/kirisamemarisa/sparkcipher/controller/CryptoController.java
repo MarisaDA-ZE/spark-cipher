@@ -40,7 +40,7 @@ public class CryptoController {
      */
     @PostMapping("/setClientPublicKey")
     public MrsResult<?> setClientPublicKey(@RequestBody SM2KeyPair keyPair) {
-        System.out.println(keyPair);
+        System.out.println("客户端公钥: " + keyPair);
         cryptoService.setClientPublicKey(keyPair);
         return MrsResult.ok("公钥更新成功");
     }
