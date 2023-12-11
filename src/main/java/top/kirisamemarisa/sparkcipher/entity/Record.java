@@ -76,6 +76,16 @@ public class Record {
         return this.regVerify(regex, this.getEmail());
     }
 
+    // 网址校验
+    public boolean verifyUrl() {
+        //Email正则
+        String regex = "(http|https|ftp)://((((25[0-5])|(2[0-4]\\d)|(1\\d{2})|([1-9]?\\d)\\.){3}" +
+                "((25[0-5])|(2[0-4]\\d)|(1\\d{2})|([1-9]?\\d)))|(([\\w-]+\\.)+" +
+                "(net|com|org|gov|edu|mil|info|travel|pro|museum|biz|[a-z]{2})))" +
+                "(/[\\w\\-~#]+)*(/[\\w-]+\\.[\\w]{2,4})?([\\?=&%_]?[\\w-]+)*";
+        return this.regVerify(regex, this.getUrl());
+    }
+
     /**
      * 使用正则进行校验
      *

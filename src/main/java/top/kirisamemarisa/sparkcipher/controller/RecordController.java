@@ -87,7 +87,7 @@ public class RecordController {
     }
 
     /**
-     * 数据库层级的字段解码
+     * 数据库字段解密
      *
      * @param record .
      */
@@ -127,23 +127,12 @@ public class RecordController {
         // ---到此
     }
 
-
     /**
-     * 添加一条记录
+     * 数据库字段加密
      *
      * @param record .
-     * @return .
      */
-    @PostMapping("/add")
-    public MrsResult<?> add(@RequestBody Record record) {
-        System.out.println(record);
-        if (ObjectUtils.isEmpty(record)) return MrsResult.failed("对象为空!");
-        if (StringUtils.isBlank(record.getUserId())) return MrsResult.failed("用户ID错误!");
-
-        // 设置ID
-        String snowflakeId = IdUtils.nextIdOne();
-        record.setId(snowflakeId);
-
+    private void encryptFiled(Record record) {
         // 标题加密
         if (StringUtils.isNotBlank(record.getTitle()))
             record.setTitle(aesUtil.encrypt(record.getTitle()));
@@ -184,14 +173,67 @@ public class RecordController {
             record.setRemark(aesUtil.encrypt(record.getRemark()));
         else record.setRemark(null);
 
+    }
+
+    /**
+     * 添加一条记录
+     *
+     * @param record .
+     * @return .
+     */
+    @PostMapping("/add")
+    public MrsResult<?> add(@RequestBody Record record) {
+        System.out.println(record);
+        if (ObjectUtils.isEmpty(record)) return MrsResult.failed("对象为空!");
+        if (StringUtils.isBlank(record.getUserId())) return MrsResult.failed("用户不存在");
+        // 设置ID
+        String snowflakeId = IdUtils.nextIdOne();
+        record.setId(snowflakeId);
+        encryptFiled(record);
         record.setCreateTime(new Date());
         record.setCreateBy(record.getUserId());
         record.setUpdateTime(null);
         record.setUpdateBy(null);
         System.out.println(record);
-
         boolean save = recordService.save(record);
         return save ? MrsResult.ok() : MrsResult.failed();
+    }
+
+    /**
+     * 编辑
+     *
+     * @param record .
+     * @return .
+     */
+    @PostMapping("/edit")
+    public MrsResult<?> edit(@RequestBody Record record) {
+        System.out.println(record);
+        String rid = record.getId();
+        Record dbRecord = recordService.getById(rid);
+        if (ObjectUtils.isEmpty(dbRecord)) return MrsResult.failed("记录不存在");
+        User authUser = securityUtils.getAuthUser();
+        encryptFiled(record);
+        record.setUpdateBy(authUser.getId());
+        record.setUpdateTime(new Date());
+        boolean isUpdate = recordService.updateById(record);
+        return isUpdate ? MrsResult.ok() : MrsResult.failed("更新失败！");
+    }
+
+    /**
+     * 删除一条记录
+     *
+     * @param rid .
+     * @return .
+     */
+    @DeleteMapping("/deleteById/{rid}")
+    public MrsResult<?> delete(@PathVariable String rid) {
+        Record dbRecord = recordService.getById(rid);
+        if (ObjectUtils.isEmpty(dbRecord)) return MrsResult.failed("记录不存在！");
+        User authUser = securityUtils.getAuthUser();
+        if (!(dbRecord.getUserId() + "").equals(authUser.getId()))
+            return MrsResult.failed("此记录不属于您！");
+        boolean isRemove = recordService.removeById(rid);
+        return isRemove ? MrsResult.ok() : MrsResult.failed("删除失败！");
     }
 
 }
