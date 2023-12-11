@@ -8,7 +8,8 @@ package top.kirisamemarisa.sparkcipher.aop.enums;
  */
 public enum CRYPTO_TYPE {
     ENCRYPT(0),  // 加密
-    DECRYPT(1);  // 解密
+    DECRYPT(1),  // 解密
+    BOTH(2);     // 加、解密都要
 
     private final Integer type;
 

@@ -61,7 +61,7 @@ public class CryptoAspect {
         System.out.println("crypto type: " + value + ", " + value1);
         Object[] args = joinPoint.getArgs();
         // 解密
-        if (value == CRYPTO_TYPE.DECRYPT && !ObjectUtils.isEmpty(args)) {
+        if ((value == CRYPTO_TYPE.DECRYPT || value == CRYPTO_TYPE.BOTH) && !ObjectUtils.isEmpty(args)) {
             for (int i = 0; i < args.length; i++) {
                 String str = args[i].toString();
                 String regExp = "[~`!@#$%^&*()_+\\-=<>?,./;:'\"\\[\\]{}|\\\\]";
@@ -73,7 +73,7 @@ public class CryptoAspect {
         Object result = joinPoint.proceed(args);
         System.out.println("返回值: " + result);
         // 加密
-        if (value == CRYPTO_TYPE.ENCRYPT && !ObjectUtils.isEmpty(result)) {
+        if ((value == CRYPTO_TYPE.ENCRYPT || value == CRYPTO_TYPE.BOTH) && !ObjectUtils.isEmpty(result)) {
             // 返回值是纯字符串转JSON后加密返回
             if (result instanceof String) {
                 String text = JSONObject.toJSONString(result);
