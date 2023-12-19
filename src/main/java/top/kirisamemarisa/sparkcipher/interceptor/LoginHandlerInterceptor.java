@@ -1,6 +1,6 @@
 package top.kirisamemarisa.sparkcipher.interceptor;
 
-import com.sun.istack.internal.NotNull;
+//import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,8 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
      * @return 是否拦截
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
+//    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 放行所有options请求
         if ("OPTIONS".equals(request.getMethod())) return true;
         String token = request.getHeader("Authorization");
