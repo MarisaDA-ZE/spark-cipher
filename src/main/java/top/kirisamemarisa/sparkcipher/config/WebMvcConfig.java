@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private static final String[] AUTH_EXCLUDE_PATH = {
-            // "/crypto/**",           // 密钥服务
+            "/crypto/**",           // 密钥服务
             "/auth/accountLogin",   // 用户名密码登录
             "/user/add",            // 添加用户
     };

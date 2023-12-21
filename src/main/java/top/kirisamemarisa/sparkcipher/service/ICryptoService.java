@@ -1,5 +1,6 @@
 package top.kirisamemarisa.sparkcipher.service;
 
+import top.kirisamemarisa.sparkcipher.entity.NegotiateKeyPair;
 import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 
 /**
@@ -10,16 +11,10 @@ import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 public interface ICryptoService {
 
     /**
-     * 获取服务端公开的公钥
+     * 协商密钥对
      *
-     * @return 公钥
+     * @param keyPair 客户端公钥
+     * @return 服务端公钥
      */
-    String getServicePublicKey();
-
-    /**
-     * 设置客户端加密用的公钥
-     *
-     * @param clientKeyPair 客户端公钥
-     */
-    void setClientPublicKey(SM2KeyPair clientKeyPair);
+    String negotiateKeyPair(NegotiateKeyPair keyPair);
 }

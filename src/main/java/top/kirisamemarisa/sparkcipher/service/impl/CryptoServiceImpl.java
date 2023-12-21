@@ -4,14 +4,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import top.kirisamemarisa.sparkcipher.common.enums.TypeSuffix;
+import top.kirisamemarisa.sparkcipher.entity.NegotiateKeyPair;
 import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
-import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
 import top.kirisamemarisa.sparkcipher.service.ICryptoService;
-import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
+import top.kirisamemarisa.sparkcipher.util.encrypto.sm2.SM2Utils;
 
 import javax.annotation.Resource;
-
 import java.util.concurrent.TimeUnit;
 
 import static top.kirisamemarisa.sparkcipher.common.Constants.KEYPAIR_EXPIRE_TIME;
@@ -25,27 +25,20 @@ import static top.kirisamemarisa.sparkcipher.common.Constants.KEYPAIR_EXPIRE_TIM
 public class CryptoServiceImpl implements ICryptoService {
 
     @Resource
-    private SecurityUtils securityUtils;
-    @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public String getServicePublicKey() {
-        User authUser = securityUtils.getAuthUser();
-        Object o = redisTemplate.opsForValue().get(authUser.getId() + ".skp");
-        if (ObjectUtils.isEmpty(o)) throw new UnauthorizedException("服务端密钥过期！");
-        SM2KeyPair keyPair = (SM2KeyPair) o;
-        return keyPair.getPublicKey();
-    }
-
-    @Override
-    public void setClientPublicKey(SM2KeyPair clientKeyPair) {
-        if (ObjectUtils.isEmpty(clientKeyPair) || StringUtils.isBlank(clientKeyPair.getPublicKey()))
+    public String negotiateKeyPair(NegotiateKeyPair negotiateKeyPair) {
+        if (ObjectUtils.isEmpty(negotiateKeyPair) || StringUtils.isBlank(negotiateKeyPair.getPublicKey()))
             throw new UnauthorizedException("密钥信息异常！");
-        SM2KeyPair keyPair = new SM2KeyPair(clientKeyPair.getPublicKey(), null);
-        System.out.println("客户端公钥: " + keyPair);
-        User authUser = securityUtils.getAuthUser();
-        String key = authUser.getId() + ".ckp";
-        redisTemplate.opsForValue().set(key, keyPair, KEYPAIR_EXPIRE_TIME, TimeUnit.SECONDS);
+        String finger = negotiateKeyPair.getF() + "";
+        SM2KeyPair ckp = new SM2KeyPair(negotiateKeyPair.getPublicKey(), null);
+        redisTemplate.opsForValue().set(finger + TypeSuffix.CKP.getTypeSuffix(), ckp, KEYPAIR_EXPIRE_TIME, TimeUnit.SECONDS);
+        // 生成服务端密钥对并保存到redis
+        SM2KeyPair skp = SM2Utils.generateKeyPair();
+        redisTemplate.opsForValue().set(finger + TypeSuffix.SKP.getTypeSuffix(), skp, KEYPAIR_EXPIRE_TIME, TimeUnit.SECONDS);
+        System.out.println("服务端密钥: " + skp);
+        System.out.println("客户端密钥: " + ckp);
+        return skp.getPublicKey();
     }
 }

@@ -1,6 +1,6 @@
 package top.kirisamemarisa.sparkcipher.service;
 
-import top.kirisamemarisa.sparkcipher.entity.LoginUser;
+import top.kirisamemarisa.sparkcipher.entity.LoginVo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,9 +14,9 @@ public interface ILoginService {
     /**
      * 用户名密码登录
      *
-     * @param loginUser 登录用户实体
+     * @param loginVo 登录用户实体
      * @param req       HttpServletRequest
      * @return token
      */
-    String loginByAccount(LoginUser loginUser, HttpServletRequest req);
+    String loginByAccount(LoginVo loginVo, HttpServletRequest req);
 }

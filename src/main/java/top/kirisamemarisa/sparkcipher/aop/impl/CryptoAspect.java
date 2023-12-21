@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 import top.kirisamemarisa.sparkcipher.aop.SM2Crypto;
 import top.kirisamemarisa.sparkcipher.aop.enums.CRYPTO_TYPE;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
+import top.kirisamemarisa.sparkcipher.common.enums.TypeSuffix;
 import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
@@ -121,7 +122,7 @@ public class CryptoAspect {
     private String decrypt(String text) {
         if (StringUtils.isBlank(text)) return null;
         User authUser = securityUtils.getAuthUser();
-        Object o = redisTemplate.opsForValue().get(authUser.getId() + ".skp");
+        Object o = redisTemplate.opsForValue().get(authUser.getId() + TypeSuffix.SKP.getTypeSuffix());
         if (ObjectUtils.isEmpty(o)) throw new UnauthorizedException("服务端密钥对已过期！");
         SM2KeyPair keyPair = (SM2KeyPair) o;
         String key = keyPair.getPublicKey();
