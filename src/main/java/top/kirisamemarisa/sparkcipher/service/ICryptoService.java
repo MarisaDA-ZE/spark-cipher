@@ -1,7 +1,6 @@
 package top.kirisamemarisa.sparkcipher.service;
 
 import top.kirisamemarisa.sparkcipher.entity.NegotiateKeyPair;
-import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 
 /**
  * @Author Marisa

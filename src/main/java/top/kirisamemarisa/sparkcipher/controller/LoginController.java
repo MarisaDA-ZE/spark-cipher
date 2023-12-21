@@ -2,16 +2,14 @@ package top.kirisamemarisa.sparkcipher.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.aop.SM2Crypto;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.common.enums.TypeSuffix;
-import top.kirisamemarisa.sparkcipher.entity.CryptoLoginVo;
-import top.kirisamemarisa.sparkcipher.entity.LoginVo;
-import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
-import top.kirisamemarisa.sparkcipher.entity.User;
+import top.kirisamemarisa.sparkcipher.entity.*;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
 import top.kirisamemarisa.sparkcipher.util.TokenUtils;
@@ -69,9 +67,9 @@ public class LoginController {
         if (uid != null) {
             User authUser = (User) redisTemplate.opsForValue().get(uid);
             if (authUser != null) {
-                authUser.setSalt(null);
-                authUser.setPassword(null);
-                res.put("user", authUser);
+                UserVo userVo = new UserVo();
+                BeanUtils.copyProperties(authUser, userVo);
+                res.put("user", userVo);
             }
         }
         res.put("token", token);

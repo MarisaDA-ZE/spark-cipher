@@ -1,10 +1,8 @@
 package top.kirisamemarisa.sparkcipher.controller;
 
-
 import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.NegotiateKeyPair;
-import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.service.ICryptoService;
 
 import javax.annotation.Resource;
