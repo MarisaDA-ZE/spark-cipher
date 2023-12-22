@@ -2,6 +2,7 @@ package top.kirisamemarisa.sparkcipher.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -83,11 +84,15 @@ public class LoginController {
     @GetMapping("/logout")
     public MrsResult<?> logout() {
         User authUser = securityUtils.getAuthUser();
-        String id = authUser.getId();
-        redisTemplate.opsForHash().delete(id);
-        redisTemplate.opsForHash().delete(id + ".token");
-        redisTemplate.opsForHash().delete(id + TypeSuffix.SKP.getTypeSuffix());
-        redisTemplate.opsForHash().delete(id + TypeSuffix.CKP.getTypeSuffix());
+        String uid = authUser.getId();
+        if (StringUtils.isNotBlank(uid)) {
+            redisTemplate.delete(uid);
+            redisTemplate.delete(uid + ".token");
+            redisTemplate.delete(uid + TypeSuffix.SKP.getTypeSuffix());
+            redisTemplate.delete(uid + TypeSuffix.CKP.getTypeSuffix());
+        } else {
+            return MrsResult.failed("登录已过期！");
+        }
         return MrsResult.ok("退出登录成功！");
     }
 }
