@@ -14,6 +14,7 @@ import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
+import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 import top.kirisamemarisa.sparkcipher.util.TokenUtils;
 import top.kirisamemarisa.sparkcipher.util.encrypto.sm2.SM2Utils;
 
@@ -35,6 +36,9 @@ public class LoginController {
 
     @Resource
     private ILoginService loginService;
+
+    @Resource
+    private SecurityUtils securityUtils;
 
     @Value("${mrs.enable-encrypt-link}")
     private Boolean enableEncrypt;
@@ -76,5 +80,16 @@ public class LoginController {
         }
         res.put("token", token);
         return MrsResult.ok("登录成功！", res);
+    }
+
+    @GetMapping("/logout")
+    public MrsResult<?> logout() {
+        User authUser = securityUtils.getAuthUser();
+        String id = authUser.getId();
+        redisTemplate.opsForHash().delete(id);
+        redisTemplate.opsForHash().delete(id + ".token");
+        redisTemplate.opsForHash().delete(id + TypeSuffix.SKP.getTypeSuffix());
+        redisTemplate.opsForHash().delete(id + TypeSuffix.CKP.getTypeSuffix());
+        return MrsResult.ok("退出登录成功！");
     }
 }
