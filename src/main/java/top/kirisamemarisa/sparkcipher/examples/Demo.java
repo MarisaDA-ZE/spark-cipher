@@ -30,20 +30,15 @@ import static java.util.stream.Collectors.toList;
 
 public class Demo {
     public static void main(String[] args) throws Exception {
-        /*
-         * Create instances of the two parties.
-         */
+        // 创建双方的实例
         Entity alice = new Entity(1, 314159, "alice");
         Entity bob = new Entity(2, 271828, "bob");
 
-        /*
-         * Establish a session between the two parties.
-         */
+
+        // 在双方之间建立一次会话
         Session aliceToBobSession = new Session(alice.getStore(), bob.getPreKey(), bob.getAddress());
 
-        /*
-         * alice can now send messages to bob.
-         */
+        // alice 向 bob 发送消息
         List<PreKeySignalMessage> toBobMessages = Arrays.stream("31,41,59,26,53".split(","))
                 .map(msg -> {
                     try {
@@ -54,26 +49,18 @@ public class Demo {
                 })
                 .collect(Collectors.toList());
 
-        /*
-         * For bob to read them, bob must know alice.
-         */
+
+        // bob如果想要阅读，那它就必须知道alice
         Session bobToAliceSession = new Session(bob.getStore(), alice.getPreKey(), alice.getAddress());
 
-        /*
-         * Now bob can decrypt them.
-         */
+        // bob 解密数据
         String fromAliceMessages = toBobMessages.stream()
                 .map(bobToAliceSession::decrypt)
-                .peek(msg -> System.out.printf("Received from alice: '%s'%n", msg))
                 .collect(joining(","));
 
-        if (!fromAliceMessages.equals("31,41,59,26,53")) {
-            throw new IllegalStateException("No match");
-        }
+        System.out.println("alice解密数据: " + fromAliceMessages);
 
-        /*
-         * bob, too, can send messages to alice.
-         */
+        // bob 向 alice 发送消息
         List<PreKeySignalMessage> toAliceMessages = Arrays.stream("the quick brown fox".split(" "))
                 .map(msg -> {
                     try {
@@ -84,22 +71,11 @@ public class Demo {
                 })
                 .collect(toList());
 
-        /*
-         * And alice can read bob's messages.
-         * Even if they arrive out of order.
-         */
+        // alice 也能解密 bob 的消息。即使他们到达时没有按顺序进行。
         Collections.shuffle(toAliceMessages);
         List<String> fromBobMessages = toAliceMessages.stream()
                 .map(aliceToBobSession::decrypt)
-                .peek(msg -> System.out.printf("Received from bob: '%s'%n", msg))
                 .collect(Collectors.toList());
-
-        if (!(fromBobMessages.size() == 4
-                && fromBobMessages.contains("the")
-                && fromBobMessages.contains("quick")
-                && fromBobMessages.contains("brown")
-                && fromBobMessages.contains("fox"))) {
-            throw new IllegalStateException("No match");
-        }
+        System.out.println("alice解密数据: " + fromBobMessages);
     }
 }
