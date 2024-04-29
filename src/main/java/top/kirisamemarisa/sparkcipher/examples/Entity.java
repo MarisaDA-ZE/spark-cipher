@@ -30,6 +30,9 @@ import org.whispersystems.libsignal.state.SignalProtocolStore;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.state.impl.InMemorySignalProtocolStore;
 import org.whispersystems.libsignal.util.KeyHelper;
+import org.whispersystems.libsignal.util.Medium;
+
+import java.util.List;
 
 public class Entity {
     private final SignalProtocolStore store;
@@ -37,8 +40,7 @@ public class Entity {
     private final SignalProtocolAddress address;
 
     public Entity(int preKeyId, int signedPreKeyId, String address)
-            throws InvalidKeyException
-    {
+            throws InvalidKeyException {
         this.address = new SignalProtocolAddress(address, 1);
         this.store = new InMemorySignalProtocolStore(
                 KeyHelper.generateIdentityKeyPair(),
@@ -68,6 +70,8 @@ public class Entity {
                 signedPreKeyPublic,
                 signedPreKeySignature,
                 identityKey);
+        List<PreKeyRecord> preKeys = KeyHelper.generatePreKeys(preKey.getPreKeyId(), 100);
+
 
         PreKeyRecord preKeyRecord = new PreKeyRecord(preKey.getPreKeyId(), preKeyPair);
         SignedPreKeyRecord signedPreKeyRecord = new SignedPreKeyRecord(

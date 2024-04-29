@@ -24,10 +24,10 @@
         </dependency>
 
         <!-- Spring Security -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-security</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-security</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- Lombok -->
         <dependency>
@@ -113,24 +113,26 @@
         </dependency>
 
         <!-- Signal协议的Java实现 -->
+        <!-- 原版依赖的protobuf-javalite存在漏洞，建议使用 3.16.3 、3.21.12这种未发现漏洞的版本 详情在mvnrepository.com上查询-->
+        <!-- 但这些无漏洞版本的protobuf-javalite无法在 2.8.1 版本上使用-->
         <dependency>
             <groupId>org.whispersystems</groupId>
             <artifactId>signal-protocol-java</artifactId>
             <version>2.8.1</version>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.google.protobuf</groupId>-->
-<!--                    <artifactId>protobuf-javalite</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
+            <!-- <exclusions>-->
+            <!--     <exclusion>-->
+            <!--         <groupId>com.google.protobuf</groupId>-->
+            <!--         <artifactId>protobuf-javalite</artifactId>-->
+            <!--     </exclusion>-->
+            <!-- </exclusions>-->
         </dependency>
 
         <!-- Signal依赖的javalite的另一个版本 -->
-<!--        <dependency>-->
-<!--            <groupId>com.google.protobuf</groupId>-->
-<!--            <artifactId>protobuf-java</artifactId>-->
-<!--            <version>3.21.7</version>-->
-<!--        </dependency>-->
+        <!-- <dependency>-->
+        <!--     <groupId>com.google.protobuf</groupId>-->
+        <!--     <artifactId>protobuf-java</artifactId>-->
+        <!--     <version>3.16.3</version>-->
+        <!-- </dependency>-->
 
         <!-- Spring Test -->
         <dependency>

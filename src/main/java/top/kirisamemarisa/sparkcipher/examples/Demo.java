@@ -17,6 +17,7 @@
  */
 package top.kirisamemarisa.sparkcipher.examples;
 
+import com.alibaba.fastjson.JSONObject;
 import org.whispersystems.libsignal.UntrustedIdentityException;
 import org.whispersystems.libsignal.protocol.PreKeySignalMessage;
 
@@ -34,7 +35,7 @@ public class Demo {
         Entity alice = new Entity(1, 314159, "alice");
         Entity bob = new Entity(2, 271828, "bob");
 
-
+        System.out.println("JSON: >>>"+JSONObject.toJSONString(bob.getPreKey()));
         // 在双方之间建立一次会话
         Session aliceToBobSession = new Session(alice.getStore(), bob.getPreKey(), bob.getAddress());
 
