@@ -13,15 +13,15 @@ import java.util.Date;
 @Data
 @ToString
 public class UserVo {
-    private String id;
-    private String userName;
-    private String gender;
-    private String phone;
-    private Integer level;
-    private String email;
-    private String avatar;
-    private Date createTime;
-    private String createBy;
-    private Date updateTime;
-    private String updateBy;
+    private String id;          // ID
+    private String userName;    // 用户名
+    private String gender;      // 性别
+    private String phone;       // 手机号
+    private Integer level;      // 等级
+    private String email;       // 邮箱
+    private String avatar;      // 头像
+    private Date createTime;    // 创建时间
+    private String createBy;    // 创建者ID
+    private Date updateTime;    // 最近更新时间
+    private String updateBy;    // 更新者ID
 }

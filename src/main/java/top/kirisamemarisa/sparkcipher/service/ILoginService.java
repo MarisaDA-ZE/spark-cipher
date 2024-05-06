@@ -1,6 +1,7 @@
 package top.kirisamemarisa.sparkcipher.service;
 
 import top.kirisamemarisa.sparkcipher.entity.LoginVo;
+import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,5 +19,5 @@ public interface ILoginService {
      * @param req       HttpServletRequest
      * @return token
      */
-    String loginByAccount(LoginVo loginVo, HttpServletRequest req);
+    MrsLResp loginByAccount(LoginVo loginVo, HttpServletRequest req);
 }

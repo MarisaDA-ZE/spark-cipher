@@ -59,8 +59,11 @@ public class RecordController {
     @SM2Crypto(CRYPTO_TYPE.ENCRYPT)
     @GetMapping("/getRecordsList")
     public MrsResult<?> getRecordsList(@RequestParam(defaultValue = "1") Integer current,
-                                       @RequestParam(defaultValue = "10") Integer size) {
+                                       @RequestParam(defaultValue = "10") Integer size,
+                                       @RequestParam(name = "text") String text) {
+        System.out.println(text);
         User authUser = securityUtils.getAuthUser();
+        System.out.println(authUser);
         String uid = authUser.getId();
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USER_ID", uid);

@@ -9,6 +9,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import top.kirisamemarisa.sparkcipher.common.enums.JwtKeys;
+
 import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
 
 /**
@@ -25,6 +27,20 @@ public class TokenUtils {
     /**
      * 生成token，可以将你认为需要的数据当成参数存入
      *
+     * @param uid  账号ID
+     * @param time 生成时间
+     * @return 生成的token
+     */
+    public static String sign(String uid, String time) {
+        Map<String, String> map = new HashMap<>();
+        map.put(JwtKeys.UID.getKey(), uid);
+        map.put(JwtKeys.TIME.getKey(), time);
+        return sign(map);
+    }
+
+    /**
+     * 生成token，可以将你认为需要的数据当成参数存入
+     *
      * @param account  账户名
      * @param deviceId 设备ID
      * @param time     生成时间
@@ -32,9 +48,9 @@ public class TokenUtils {
      */
     public static String sign(String account, String deviceId, String time) {
         Map<String, String> map = new HashMap<>();
-        map.put("account", account);
-        map.put("deviceId", deviceId);
-        map.put("time", time);
+        map.put(JwtKeys.ACCOUNT.getKey(), account);
+        map.put(JwtKeys.DEVICE_ID.getKey(), deviceId);
+        map.put(JwtKeys.TIME.getKey(), time);
         return sign(map);
     }
 

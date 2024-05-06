@@ -19,7 +19,7 @@ import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
-import top.kirisamemarisa.sparkcipher.util.encrypto.sm2.SM2Utils;
+//import top.kirisamemarisa.sparkcipher.util.encrypto.sm2.SM2Utils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
@@ -105,12 +105,13 @@ public class CryptoAspect {
         if (ObjectUtils.isEmpty(o)) throw new UnauthorizedException("客户端密钥对已过期！");
         SM2KeyPair keyPair = (SM2KeyPair) o;
         String key = keyPair.getPublicKey();
-        try {
-            return SM2Utils.encrypt(text, key);
-        } catch (Exception e) {
-            // throw new EncryptException(ENCRYPT_ERROR);
-            return text;
-        }
+        return text;
+//        try {
+//            return SM2Utils.encrypt(text, key);
+//        } catch (Exception e) {
+//            // throw new EncryptException(ENCRYPT_ERROR);
+//            return text;
+//        }
     }
 
     /**
@@ -126,11 +127,12 @@ public class CryptoAspect {
         if (ObjectUtils.isEmpty(o)) throw new UnauthorizedException("服务端密钥对已过期！");
         SM2KeyPair keyPair = (SM2KeyPair) o;
         String key = keyPair.getPublicKey();
-        try {
-            return SM2Utils.decrypt(text, key);
-        } catch (Exception e) {
-            // throw new DecryptException(DECRYPT_ERROR);
-            return text;
-        }
+        return text;
+//        try {
+//            return SM2Utils.decrypt(text, key);
+//        } catch (Exception e) {
+//            // throw new DecryptException(DECRYPT_ERROR);
+//            return text;
+//        }
     }
 }

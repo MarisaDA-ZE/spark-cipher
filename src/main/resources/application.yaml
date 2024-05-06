@@ -4,7 +4,7 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.109.66.127:3306/spark-cipher?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://47.109.66.127:3306/spark-cipher?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: marisa
     password: $pwdByMySQL6845.
   redis:
@@ -41,7 +41,11 @@ mybatis-plus:
       logic-delete-field: deleted
 
 mrs:
-  enable-encrypt-link: true # 是否启动全局加密传输
+  enable-encrypt-link: false # 是否启动全局加密传输
+  # SM2 预埋密钥
+  sm2-public-key: 048EA5A585A953117D9854B819E59B75442445C9E84FDB5293F1CC6A9937A20100A08749D1A27A8B8113D2092E56F968D049981999EC44C6C70E1CFB0A5490D143
+  sm2-private-key: 0B6A9260A94C3F26FCB1DEE168763B0FB4C654D08FC7CA497EC45F4C160079F0
+
   # AES256 密钥
   secret-key: CWOPE7iin6a9rMhI7tJus4Fh0uHBt6VEMkqsIYUlnMs=
   secret-iv: OIPCSsv76Vl1FsQSc68XmA==

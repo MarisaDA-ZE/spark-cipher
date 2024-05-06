@@ -1,7 +1,9 @@
 package top.kirisamemarisa.sparkcipher.config;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.exception.NotFoundException;
@@ -17,24 +19,26 @@ public class GlobalExceptionHandler {
 
     /**
      * 请求要求用户的身份认证
-     *
-     * @param e .
+     * <p>401身份认证失败</p>
+     * @param e 异常名称
      * @return .
      */
     @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public MrsResult<?> unauthorizedException(UnauthorizedException e) {
-        return MrsResult.failed(401, e.getMessage());
+        return MrsResult.failed(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
     }
 
     /**
-     * 用户不存在
-     *
+     * 资源不存在
+     * <p>404资源未找到</p>
      * @param e .
      * @return .
      */
     @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public MrsResult<?> userNotExistException(NotFoundException e) {
-        return MrsResult.failed(404, e.getMessage());
+        return MrsResult.failed(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
 //    /**

@@ -90,27 +90,33 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-
-        <!-- 国密依赖1 -->
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.56</version>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.27</version>
         </dependency>
 
-        <!-- 国密依赖2 -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15to18</artifactId>
-            <version>1.68</version>
-        </dependency>
 
-        <!-- 摘要运算包 -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
+<!--        &lt;!&ndash; 国密依赖1 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.bouncycastle</groupId>-->
+<!--            <artifactId>bcprov-jdk15on</artifactId>-->
+<!--            <version>1.56</version>-->
+<!--        </dependency>-->
+
+<!--        &lt;!&ndash; 国密依赖2 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.bouncycastle</groupId>-->
+<!--            <artifactId>bcprov-jdk15to18</artifactId>-->
+<!--            <version>1.68</version>-->
+<!--        </dependency>-->
+
+<!--        &lt;!&ndash; 摘要运算包 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>commons-codec</groupId>-->
+<!--            <artifactId>commons-codec</artifactId>-->
+<!--            <version>1.15</version>-->
+<!--        </dependency>-->
 
         <!-- Signal协议的Java实现 -->
         <!-- 原版依赖的protobuf-javalite存在漏洞，建议使用 3.16.3 、3.21.12这种未发现漏洞的版本 详情在mvnrepository.com上查询-->

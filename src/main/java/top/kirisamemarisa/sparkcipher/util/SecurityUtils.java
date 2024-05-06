@@ -4,9 +4,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import top.kirisamemarisa.sparkcipher.common.enums.JwtKeys;
 import top.kirisamemarisa.sparkcipher.entity.User;
 
 import javax.annotation.Resource;
+
+import static top.kirisamemarisa.sparkcipher.common.Constants.USER_SUFFIX;
 
 /**
  * @Author Marisa
@@ -27,10 +30,9 @@ public class SecurityUtils {
     public User getAuthUser() {
         String tk = stk.get();
         System.out.println("thread token: " + tk);
-        String uid = TokenUtils.decryptToken(tk, "account");
-        if (StringUtils.isBlank(uid)) return null;
-        Object o = redisTemplate.opsForValue().get(uid);
-        if (ObjectUtils.isEmpty(o)) return null;
-        return (User) o;
+        String uid = TokenUtils.decryptToken(tk, JwtKeys.UID.getKey());
+        Object u = redisTemplate.opsForValue().get(uid + USER_SUFFIX);
+        if (StringUtils.isBlank(uid) || ObjectUtils.isEmpty(u)) return null;
+        return (User) u;
     }
 }
