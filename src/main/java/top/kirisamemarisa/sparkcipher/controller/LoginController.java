@@ -4,9 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
-import top.kirisamemarisa.sparkcipher.common.enums.TypeSuffix;
+import top.kirisamemarisa.sparkcipher.entity.enums.TypeSuffix;
 import top.kirisamemarisa.sparkcipher.entity.*;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
+import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 

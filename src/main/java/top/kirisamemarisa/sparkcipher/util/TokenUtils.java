@@ -9,7 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import top.kirisamemarisa.sparkcipher.common.enums.JwtKeys;
+import top.kirisamemarisa.sparkcipher.entity.enums.JwtKeys;
 
 import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
 

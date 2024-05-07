@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.entity;
+package top.kirisamemarisa.sparkcipher.entity.vo;
 
 import lombok.Data;
 import lombok.ToString;

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import top.kirisamemarisa.sparkcipher.common.enums.TypeSuffix;
+import top.kirisamemarisa.sparkcipher.entity.enums.TypeSuffix;
 import top.kirisamemarisa.sparkcipher.entity.NegotiateKeyPair;
 import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;

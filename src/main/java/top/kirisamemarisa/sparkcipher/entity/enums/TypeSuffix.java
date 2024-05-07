@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.common.enums;
+package top.kirisamemarisa.sparkcipher.entity.enums;
 
 /**
  * @Author Marisa

@@ -1,6 +1,5 @@
 package top.kirisamemarisa.sparkcipher.util.encrypto.aes;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
@@ -26,10 +25,8 @@ public class AES256Utils {
     private static final int KEY_SIZE = 256;
     private static final int IV_SIZE = 16;
 
-    @Value("${mrs.secret-key}")
-    private String secretKey;
-    @Value("${mrs.secret-iv}")
-    private String iv_key;
+    private static final String SECRET_KEY = "CWOPE7iin6a9rMhI7tJus4Fh0uHBt6VEMkqsIYUlnMs=";
+    private static final String IV_KEY = "OIPCSsv76Vl1FsQSc68XmA==";
 
 
     public static void main(String[] args) throws Exception {
@@ -60,12 +57,12 @@ public class AES256Utils {
         return iv;
     }
 
-    public String encrypt(String plainText) {
+    public static String encrypt(String plainText) {
         String result = null;
         try {
-            byte[] bytes = Base64.getDecoder().decode(secretKey);
+            byte[] bytes = Base64.getDecoder().decode(SECRET_KEY);
             SecretKey secretKey = new SecretKeySpec(bytes, "AES");
-            byte[] iv = Base64.getDecoder().decode(iv_key);
+            byte[] iv = Base64.getDecoder().decode(IV_KEY);
             result = encrypt(plainText, secretKey, iv);
 
         } catch (Exception e) {
@@ -82,16 +79,16 @@ public class AES256Utils {
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    public String decrypt(String encryptedText) {
-        String result = null;
+    public static String decrypt(String encryptedText) {
+        String result;
         try {
-            byte[] bytes = Base64.getDecoder().decode(secretKey);
+            byte[] bytes = Base64.getDecoder().decode(SECRET_KEY);
             SecretKey secretKey = new SecretKeySpec(bytes, "AES");
-            byte[] iv = Base64.getDecoder().decode(iv_key);
+            byte[] iv = Base64.getDecoder().decode(IV_KEY);
             result = decrypt(encryptedText, secretKey, iv);
-
         } catch (Exception e) {
             e.printStackTrace();
+            return encryptedText;
         }
         return result;
     }
@@ -100,8 +97,13 @@ public class AES256Utils {
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
-        byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
-        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-        return new String(decryptedBytes, StandardCharsets.UTF_8);
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            return new String(decryptedBytes, StandardCharsets.UTF_8);
+        } catch (Exception ex) {
+            // System.out.println("转换出错: " + ex.getMessage());
+        }
+        return encryptedText;
     }
 }

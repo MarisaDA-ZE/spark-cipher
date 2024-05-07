@@ -1,8 +1,8 @@
-package top.kirisamemarisa.sparkcipher.entity;
+package top.kirisamemarisa.sparkcipher.entity.vo;
 
 import lombok.Data;
 import lombok.ToString;
-import top.kirisamemarisa.sparkcipher.common.enums.LoginType;
+import top.kirisamemarisa.sparkcipher.entity.enums.LoginType;
 
 import java.util.Date;
 

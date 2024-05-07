@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import top.kirisamemarisa.sparkcipher.common.enums.JwtKeys;
+import top.kirisamemarisa.sparkcipher.entity.enums.JwtKeys;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
 import top.kirisamemarisa.sparkcipher.service.IUserService;

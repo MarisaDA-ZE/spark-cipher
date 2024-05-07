@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import top.kirisamemarisa.sparkcipher.entity.UserVo;
+import top.kirisamemarisa.sparkcipher.entity.vo.UserVo;
 
 /**
  * @Author Marisa

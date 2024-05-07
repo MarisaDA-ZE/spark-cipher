@@ -1,0 +1,80 @@
+{
+  "id": "1771434139937464320",
+  "userId": "12313212313",
+  "title": {
+    "label": "标题",
+    "key": "title",
+    "value": "这是一段标题，这是一段十六字的标题",
+    "type": "text",
+    "sort": 1
+  },
+  "account": {
+    "label": "账号",
+    "key": "account",
+    "value": "MarisaDAZE",
+    "type": "text",
+    "sort": 2
+  },
+  "userName": {
+    "label": "昵称",
+    "key": "userName",
+    "value": "MarisaDA★ZE",
+    "type": "text",
+    "sort": 3
+  },
+  "password": {
+    "label": "密码",
+    "key": "password",
+    "value": "marisa@123",
+    "type": "text",
+    "sort": 4
+  },
+  "phone": {
+    "label": "手机号",
+    "key": "phone",
+    "value": "18384669885",
+    "type": "text",
+    "sort": 5
+  },
+  "email": {
+    "label": "邮箱",
+    "key": "email",
+    "value": "3038488053@qq.com",
+    "type": "text",
+    "sort": 6
+  },
+  "url": {
+    "label": "网址",
+    "key": "url",
+    "value": "https://kmarisa.icu/",
+    "type": "textarea",
+    "sort": 7
+  },
+  "remark": {
+    "label": "网址",
+    "key": "remark",
+    "value": "这是一段备注信息>_<",
+    "type": "textarea",
+    "sort": 8
+  },
+  "customs": [
+    {
+      "label": "网址2",
+      "key": "url_2",
+      "value": "https://kmarisa.icu/",
+      "type": "textarea",
+      "sort": 9
+    },
+    {
+      "label": "网址3",
+      "key": "url_3",
+      "value": "https://kmarisa.icu/",
+      "type": "textarea",
+      "sort": 10
+    }
+  ],
+  "createTime": 1710516051024,
+  "createBy": "Marisa",
+  "updateTime": 1714815180932,
+  "updateBy": null
+}

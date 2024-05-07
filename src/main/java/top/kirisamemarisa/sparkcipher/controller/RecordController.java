@@ -11,6 +11,7 @@ import top.kirisamemarisa.sparkcipher.aop.enums.CRYPTO_TYPE;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.Record;
 import top.kirisamemarisa.sparkcipher.entity.User;
+import top.kirisamemarisa.sparkcipher.entity.vo.RecordVo;
 import top.kirisamemarisa.sparkcipher.service.IRecordService;
 import top.kirisamemarisa.sparkcipher.util.encrypto.aes.AES256Utils;
 import top.kirisamemarisa.sparkcipher.util.IdUtils;
@@ -18,7 +19,6 @@ import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author Marisa
@@ -33,8 +33,6 @@ public class RecordController {
     @Resource
     private IRecordService recordService;
 
-    @Resource
-    private AES256Utils aesUtil;
 
     @Resource
     private SecurityUtils securityUtils;
@@ -42,9 +40,9 @@ public class RecordController {
     @GetMapping("/test")
     public MrsResult<?> test() {
         String s = "原神,启动！！！！";
-        String encrypt = aesUtil.encrypt(s);
+        String encrypt = AES256Utils.encrypt(s);
         System.out.println(encrypt);
-        String decrypt = aesUtil.decrypt(encrypt);
+        String decrypt = AES256Utils.decrypt(encrypt);
         System.out.println(decrypt);
         return MrsResult.ok();
     }
@@ -60,144 +58,60 @@ public class RecordController {
     @GetMapping("/getRecordsList")
     public MrsResult<?> getRecordsList(@RequestParam(defaultValue = "1") Integer current,
                                        @RequestParam(defaultValue = "10") Integer size,
-                                       @RequestParam(name = "text") String text) {
-        System.out.println(text);
+                                       @RequestParam(name = "text", defaultValue = "") String text) {
+        System.out.println(current + ", " + size + ", " + text);
         User authUser = securityUtils.getAuthUser();
         System.out.println(authUser);
         String uid = authUser.getId();
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USER_ID", uid);
-        IPage<Record> page = recordService.page(new Page<>(current, size), queryWrapper);
-        page.getRecords().forEach(this::decryptField);
+        IPage<Record> dbPage = recordService.page(new Page<>(current, size), queryWrapper);
+        dbPage.getRecords().forEach(Record::decryptField);
+        IPage<RecordVo> page = dbPage.convert(Record::toVo);
         page.getRecords().forEach(System.out::println);
         return MrsResult.ok(page);
     }
 
-    /**
-     * 根据用户ID查询记录信息
-     *
-     * @param userId .
-     * @return .
-     */
-    @GetMapping("/getRecordByUserId")
-    public MrsResult<?> getRecordByUserId(String userId) {
+    @GetMapping("/getRecordById")
+    public MrsResult<?> getRecordById(@RequestParam(name = "id") String id) {
+        User authUser = securityUtils.getAuthUser();
+        System.out.println(authUser);
+        String uid = authUser.getId();
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("USER_ID", userId);
-        List<Record> list = recordService.list(queryWrapper);
-        list.forEach(this::decryptField);
-        list.forEach(System.out::println);
-        return MrsResult.ok(list);
-    }
-
-    /**
-     * 数据库字段解密
-     *
-     * @param record .
-     */
-    private void decryptField(Record record) {
-        // ---数据库层级的数据解密
-        // 标题解密
-        if (StringUtils.isNotBlank(record.getTitle()))
-            record.setTitle(aesUtil.decrypt(record.getTitle()));
-
-        // 账户名解密
-        if (StringUtils.isNotBlank(record.getAccount()))
-            record.setAccount(aesUtil.decrypt(record.getAccount()));
-
-        // 用户名解密
-        if (StringUtils.isNotBlank(record.getUserName()))
-            record.setUserName(aesUtil.decrypt(record.getUserName()));
-
-        // 密码解密
-        if (StringUtils.isNotBlank(record.getPassword()))
-            record.setPassword(aesUtil.decrypt(record.getPassword()));
-
-        // 手机号解密
-        if (StringUtils.isNotBlank(record.getPhone()))
-            record.setPhone(aesUtil.decrypt(record.getPhone()));
-
-        // 邮箱解密
-        if (StringUtils.isNotBlank(record.getEmail()))
-            record.setEmail(aesUtil.decrypt(record.getEmail()));
-
-        // URL解密
-        if (StringUtils.isNotBlank(record.getUrl()))
-            record.setUrl(aesUtil.decrypt(record.getUrl()));
-
-        // 备注信息解密
-        if (StringUtils.isNotBlank(record.getRemark()))
-            record.setRemark(aesUtil.decrypt(record.getRemark()));
-        // ---到此
-    }
-
-    /**
-     * 数据库字段加密
-     *
-     * @param record .
-     */
-    private void encryptFiled(Record record) {
-        // 标题加密
-        if (StringUtils.isNotBlank(record.getTitle()))
-            record.setTitle(aesUtil.encrypt(record.getTitle()));
-        else record.setTitle(null);
-
-        // 账户名加密
-        if (StringUtils.isNotBlank(record.getAccount()))
-            record.setAccount(aesUtil.encrypt(record.getAccount()));
-        else record.setAccount(null);
-
-        // 用户名加密
-        if (StringUtils.isNotBlank(record.getUserName()))
-            record.setUserName(aesUtil.encrypt(record.getUserName()));
-        else record.setUserName(null);
-
-        // 密码加密
-        if (StringUtils.isNotBlank(record.getPassword()))
-            record.setPassword(aesUtil.encrypt(record.getPassword()));
-        else record.setPassword(null);
-
-        // 手机号加密
-        if (StringUtils.isNotBlank(record.getPhone()))
-            record.setPhone(aesUtil.encrypt(record.getPhone()));
-        else record.setPhone(null);
-
-        // 邮箱加密
-        if (StringUtils.isNotBlank(record.getEmail()))
-            record.setEmail(aesUtil.encrypt(record.getEmail()));
-        else record.setEmail(null);
-
-        // URL加密
-        if (StringUtils.isNotBlank(record.getUrl()))
-            record.setUrl(aesUtil.encrypt(record.getUrl()));
-        else record.setUrl(null);
-
-        // 备注信息加密
-        if (StringUtils.isNotBlank(record.getRemark()))
-            record.setRemark(aesUtil.encrypt(record.getRemark()));
-        else record.setRemark(null);
-
+        queryWrapper.eq("USER_ID", uid);
+        queryWrapper.eq("ID", id);
+        Record record = recordService.getOne(queryWrapper);
+        record.decryptField();
+        System.out.println("查询一个: " + record);
+        return MrsResult.ok(record.toVo());
     }
 
     /**
      * 添加一条记录
      *
-     * @param record .
+     * @param recordVo .
      * @return .
      */
-    @PostMapping("/add")
-    public MrsResult<?> add(@RequestBody Record record) {
-        System.out.println(record);
-        if (ObjectUtils.isEmpty(record)) return MrsResult.failed("对象为空!");
-        if (StringUtils.isBlank(record.getUserId())) return MrsResult.failed("用户不存在");
+    @PutMapping("/add")
+    public MrsResult<?> add(@RequestBody RecordVo recordVo) {
+        System.out.println(recordVo);
+        if (ObjectUtils.isEmpty(recordVo)) return MrsResult.failed("对象为空!");
+        User authUser = securityUtils.getAuthUser();
+        String uid = authUser.getId();
+        if (StringUtils.isBlank(uid)) return MrsResult.failed("用户不存在");
+
+        Record record = recordVo.toDto();
         // 设置ID
         String snowflakeId = IdUtils.nextIdOne();
         record.setId(snowflakeId);
-        encryptFiled(record);
+        record.setUserId(uid);
         record.setCreateTime(new Date());
-        record.setCreateBy(record.getUserId());
+        record.setCreateBy(uid);
         record.setUpdateTime(null);
         record.setUpdateBy(null);
-        System.out.println(record);
+        System.out.println("加密前: " + record);
+        record.encryptField();
+        System.out.println("加密后: " + record);
         boolean save = recordService.save(record);
         return save ? MrsResult.ok() : MrsResult.failed();
     }
@@ -205,19 +119,32 @@ public class RecordController {
     /**
      * 编辑
      *
-     * @param record .
+     * @param recordVo .
      * @return .
      */
     @PostMapping("/edit")
-    public MrsResult<?> edit(@RequestBody Record record) {
-        System.out.println(record);
-        String rid = record.getId();
+    public MrsResult<?> edit(@RequestBody RecordVo recordVo) {
+        System.out.println(recordVo);
+        String rid = recordVo.getId();
+        User authUser = securityUtils.getAuthUser();
+        String uid = authUser.getId();
+        if (!(recordVo.getUserId() + "").equals(uid)) return MrsResult.failed("不可跨用户修改");
+
         Record dbRecord = recordService.getById(rid);
         if (ObjectUtils.isEmpty(dbRecord)) return MrsResult.failed("记录不存在");
-        User authUser = securityUtils.getAuthUser();
-        encryptFiled(record);
+
+        Record record = recordVo.toDto();
+        record.encryptField();
+        // 一些不可更改字段
+        record.setId(null);
+        record.setUserId(null);
+        record.setCreateBy(null);
+        record.setCreateTime(null);
+
+        // 设置更新信息
         record.setUpdateBy(authUser.getId());
         record.setUpdateTime(new Date());
+
         boolean isUpdate = recordService.updateById(record);
         return isUpdate ? MrsResult.ok() : MrsResult.failed("更新失败！");
     }

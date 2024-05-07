@@ -1,6 +1,6 @@
 package top.kirisamemarisa.sparkcipher.service;
 
-import top.kirisamemarisa.sparkcipher.entity.LoginVo;
+import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 
 import javax.servlet.http.HttpServletRequest;

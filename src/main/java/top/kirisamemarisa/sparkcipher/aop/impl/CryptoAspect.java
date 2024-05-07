@@ -14,7 +14,7 @@ import org.springframework.util.ObjectUtils;
 import top.kirisamemarisa.sparkcipher.aop.SM2Crypto;
 import top.kirisamemarisa.sparkcipher.aop.enums.CRYPTO_TYPE;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
-import top.kirisamemarisa.sparkcipher.common.enums.TypeSuffix;
+import top.kirisamemarisa.sparkcipher.entity.enums.TypeSuffix;
 import top.kirisamemarisa.sparkcipher.entity.SM2KeyPair;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
