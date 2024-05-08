@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.kirisamemarisa.sparkcipher.entity.Record">
+<mapper namespace="top.kirisamemarisa.sparkcipher.mapper.RecordMapper">
 
+    <!-- FIXME: 根据 ID 更新一条记录信息 -->
+    <update id="updateRecordById" parameterType="top.kirisamemarisa.sparkcipher.entity.Record">
+        UPDATE `record`
+        SET
+        <if test="title != null">`title` = #{title},</if>
+        <if test="title == null">`title` = NULL,</if>
+
+        <if test="account != null">`account` = #{account},</if>
+        <if test="account == null">`account` = NULL,</if>
+
+        <if test="nickName != null">`nick_name` = #{nickName},</if>
+        <if test="nickName == null">`nick_name` = NULL,</if>
+
+        <if test="password != null">`password` = #{password},</if>
+        <if test="password == null">`password` = NULL,</if>
+
+        <if test="phone != null">`phone` = #{phone},</if>
+        <if test="phone == null">`phone` = NULL,</if>
+
+        <if test="email != null">`email` = #{email},</if>
+        <if test="email == null">`email` = NULL,</if>
+
+        <if test="url != null">`url` = #{url},</if>
+        <if test="url == null">`url` = NULL,</if>
+
+        <if test="remark != null">`remark` = #{remark},</if>
+        <if test="remark == null">`remark` = NULL,</if>
+
+        <if test="customs != null">`customs` = #{customs},</if>
+        <if test="customs == null">`customs` = NULL,</if>
+
+        `update_by` = #{updateBy},
+        `update_time` = #{updateTime}
+        WHERE `id` = #{id}
+    </update>
 </mapper>
 

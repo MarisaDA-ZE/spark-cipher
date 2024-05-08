@@ -11,4 +11,12 @@ import top.kirisamemarisa.sparkcipher.entity.Record;
  **/
 @Mapper
 public interface RecordMapper extends BaseMapper<Record> {
+
+    /**
+     * 按ID更新记录
+     *
+     * @param record 记录
+     * @return 结果
+     */
+    boolean updateRecordById(Record record);
 }

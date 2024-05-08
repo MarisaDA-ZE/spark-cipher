@@ -10,6 +10,7 @@ import top.kirisamemarisa.sparkcipher.aop.SM2Crypto;
 import top.kirisamemarisa.sparkcipher.aop.enums.CRYPTO_TYPE;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.Record;
+import top.kirisamemarisa.sparkcipher.entity.RecordItem;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.entity.vo.RecordVo;
 import top.kirisamemarisa.sparkcipher.service.IRecordService;
@@ -58,13 +59,14 @@ public class RecordController {
     @GetMapping("/getRecordsList")
     public MrsResult<?> getRecordsList(@RequestParam(defaultValue = "1") Integer current,
                                        @RequestParam(defaultValue = "10") Integer size,
-                                       @RequestParam(name = "text", defaultValue = "") String text) {
+                                       @RequestParam(name = "keyWords", defaultValue = "") String text) {
         System.out.println(current + ", " + size + ", " + text);
         User authUser = securityUtils.getAuthUser();
         System.out.println(authUser);
         String uid = authUser.getId();
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USER_ID", uid);
+        if (StringUtils.isNotBlank(text)) queryWrapper.like("SEARCH_TEXT", text);
         IPage<Record> dbPage = recordService.page(new Page<>(current, size), queryWrapper);
         dbPage.getRecords().forEach(Record::decryptField);
         IPage<RecordVo> page = dbPage.convert(Record::toVo);
@@ -101,10 +103,14 @@ public class RecordController {
         if (StringUtils.isBlank(uid)) return MrsResult.failed("用户不存在");
 
         Record record = recordVo.toDto();
+        RecordItem title = recordVo.getTitle();
+        String value = title.getValue();
+
         // 设置ID
         String snowflakeId = IdUtils.nextIdOne();
         record.setId(snowflakeId);
         record.setUserId(uid);
+        record.setSearchText(value);
         record.setCreateTime(new Date());
         record.setCreateBy(uid);
         record.setUpdateTime(null);
@@ -125,27 +131,7 @@ public class RecordController {
     @PostMapping("/edit")
     public MrsResult<?> edit(@RequestBody RecordVo recordVo) {
         System.out.println(recordVo);
-        String rid = recordVo.getId();
-        User authUser = securityUtils.getAuthUser();
-        String uid = authUser.getId();
-        if (!(recordVo.getUserId() + "").equals(uid)) return MrsResult.failed("不可跨用户修改");
-
-        Record dbRecord = recordService.getById(rid);
-        if (ObjectUtils.isEmpty(dbRecord)) return MrsResult.failed("记录不存在");
-
-        Record record = recordVo.toDto();
-        record.encryptField();
-        // 一些不可更改字段
-        record.setId(null);
-        record.setUserId(null);
-        record.setCreateBy(null);
-        record.setCreateTime(null);
-
-        // 设置更新信息
-        record.setUpdateBy(authUser.getId());
-        record.setUpdateTime(new Date());
-
-        boolean isUpdate = recordService.updateById(record);
+        boolean isUpdate = recordService.updateRecordById(recordVo);
         return isUpdate ? MrsResult.ok() : MrsResult.failed("更新失败！");
     }
 

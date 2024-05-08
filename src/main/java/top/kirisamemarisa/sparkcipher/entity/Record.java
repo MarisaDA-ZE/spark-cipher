@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import top.kirisamemarisa.sparkcipher.aop.DBCrypto;
 import top.kirisamemarisa.sparkcipher.aop.RecordTranslate;
 import top.kirisamemarisa.sparkcipher.aop.enums.FIELD_TYPE;
@@ -41,6 +40,9 @@ public class Record {
     @RecordTranslate
     private String title;
 
+    // 搜索关键字（标题的内容）
+    private String searchText;
+
     // 账户名
     @DBCrypto
     @RecordTranslate
@@ -49,7 +51,7 @@ public class Record {
     // 用户名
     @DBCrypto
     @RecordTranslate
-    private String userName;
+    private String nickName;
 
     // 密码
     @DBCrypto
@@ -175,8 +177,10 @@ public class Record {
                 } else {
                     voField.set(recordVo, value);
                 }
-            } catch (IllegalAccessException | NoSuchFieldException e) {
+            } catch (IllegalAccessException e) {
                 System.out.println("错误信息: " + e.getMessage());
+            }catch (NoSuchFieldException ignored){
+                // 这种情况是没有vo类中没有dto对应的字段，直接不管即可
             }
         }
         return recordVo;

@@ -1,7 +1,6 @@
 package top.kirisamemarisa.sparkcipher.entity.vo;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
@@ -43,7 +42,7 @@ public class RecordVo {
 
     // 用户名
     @RecordTranslate
-    private RecordItem userName;
+    private RecordItem nickName;
 
     // 密码
     @RecordTranslate
@@ -70,12 +69,14 @@ public class RecordVo {
     private List<RecordItem> customs;
 
     // 创建时间
+    @RecordTranslate(FIELD_TYPE.M_DATE)
     private Long createTime;
 
     // 创建者ID
     private String createBy;
 
     // 更新时间
+    @RecordTranslate(FIELD_TYPE.M_DATE)
     private Long updateTime;
 
     // 更新时间
@@ -139,7 +140,11 @@ public class RecordVo {
                             dtoField.set(record, JSONObject.toJSONString(value));
                             break;
                         case M_DATE:
-                            dtoField.set(record, new Date((long) value));
+                            if (value == null) {
+                                dtoField.set(record, null);
+                            } else {
+                                dtoField.set(record, new Date((long) value));
+                            }
                             break;
                     }
                 } else {
