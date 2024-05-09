@@ -1,5 +1,10 @@
 server:
   port: 8001
+  ssl:
+    enabled: true
+    key-store: classpath:cert/api.kmarisa.icu.jks
+    key-store-password: rvocmimr
+    key-password: rvocmimr
 spring:
   # 数据源配置
   datasource:
@@ -42,6 +47,8 @@ mybatis-plus:
 
 mrs:
   enable-encrypt-link: false # 是否启动全局加密传输
+  controller:
+    path-prefix: /v1
   # SM2 预埋密钥
   sm2-public-key: 048EA5A585A953117D9854B819E59B75442445C9E84FDB5293F1CC6A9937A20100A08749D1A27A8B8113D2092E56F968D049981999EC44C6C70E1CFB0A5490D143
   sm2-private-key: 0B6A9260A94C3F26FCB1DEE168763B0FB4C654D08FC7CA497EC45F4C160079F0

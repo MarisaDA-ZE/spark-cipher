@@ -45,6 +45,9 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
     @Override
 //    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
+        System.out.println("请求方式: " + request.getMethod());
+        System.out.println("请求地址: " + request.getHeader("HOST") + request.getRequestURI());
         // 放行所有options请求
         if ("OPTIONS".equals(request.getMethod())) return true;
         String token = request.getHeader("Authorization");
