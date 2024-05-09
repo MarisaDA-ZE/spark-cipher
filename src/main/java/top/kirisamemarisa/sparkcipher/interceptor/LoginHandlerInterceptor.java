@@ -1,7 +1,5 @@
 package top.kirisamemarisa.sparkcipher.interceptor;
 
-//import com.sun.istack.internal.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -43,7 +41,6 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
      * @return 是否拦截
      */
     @Override
-//    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         System.out.println("请求方式: " + request.getMethod());
@@ -58,10 +55,10 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
         token = token.replaceAll("Bearer ", "");
         // 用户ID
         String uid = TokenUtils.decryptToken(token, JwtKeys.UID.getKey());
-        String loginToken = (String) redisTemplate.opsForValue().get(uid + TOKEN_SUFFIX);
+        String loggedToken = (String) redisTemplate.opsForValue().get(uid + TOKEN_SUFFIX);
 
         // token校验失败(已过期)或者取不出ID 或 Redis中这个Token不正确
-        if (!TokenUtils.verify(token) || StringUtils.isBlank(uid) || !TokenUtils.verify(loginToken)) {
+        if (!TokenUtils.verify(token) || StringUtils.isBlank(uid) || !TokenUtils.verify(loggedToken)) {
             throw new UnauthorizedException("token已过期！");
         }
 

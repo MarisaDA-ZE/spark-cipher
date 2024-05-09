@@ -13,6 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 public interface ILoginService {
 
     /**
+     * 通过用户名密码创建账号
+     * @param loginVo   vo类
+     * @return  创建结果（错误信息或者null，null时表示创建成功）
+     */
+    String accountCreate(LoginVo loginVo);
+
+    /**
      * 用户名密码登录
      *
      * @param loginVo 登录用户实体

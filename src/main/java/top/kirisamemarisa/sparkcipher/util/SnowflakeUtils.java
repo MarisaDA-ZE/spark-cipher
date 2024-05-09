@@ -1,11 +1,14 @@
 package top.kirisamemarisa.sparkcipher.util;
 
+
+import java.util.*;
+
 /**
  * @Author Marisa
  * @Description 雪花ID工具类
  * @Date 2023/11/27
  */
-public class IdUtils {
+public class SnowflakeUtils {
     // 开始时间戳（2023-01-01）
     private final static long twepoch = 1672502400000L;
 
@@ -41,6 +44,8 @@ public class IdUtils {
     private long sequence = 0L;
     private long lastTimestamp = -1L;
 
+    private static SnowflakeUtils instance = null;
+
     public void SnowflakeIdWorker(long workerId, long datacenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
             throw new IllegalArgumentException(String.format("工作ID不能大于 %d 或小于0", maxWorkerId));
@@ -52,7 +57,7 @@ public class IdUtils {
         this.datacenterId = datacenterId;
     }
 
-    public synchronized long nextId() {
+    public synchronized long next() {
         long timestamp = timeGen();
 
         if (timestamp < lastTimestamp) {
@@ -73,10 +78,11 @@ public class IdUtils {
         return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift) | (workerId << workerIdShift) | sequence;
     }
 
-    public static String nextIdOne() {
-        IdUtils idUtil = new IdUtils();
-        long l = idUtil.nextId();
-        return String.valueOf(l);
+    public static String nextId() {
+        if (instance == null) {
+            instance = new SnowflakeUtils();
+        }
+        return String.valueOf(instance.next());
     }
 
     protected long tilNextMillis(long lastTimestamp) {
@@ -92,10 +98,17 @@ public class IdUtils {
     }
 
     public static void main(String[] args) {
-        IdUtils idWorker = new IdUtils();
-        for (int i = 0; i < 10; i++) {
-            long id = idWorker.nextId();
-            System.out.println(id);
+
+        Set<String> ids = new HashSet<>();
+        for (int i = 0; i < 10000; i++) {
+            String s = SnowflakeUtils.nextId();
+            ids.add(s);
+            int size = ids.size();
+            if (size - 1 != i) {
+                System.out.println("存在重复！");
+                break;
+            }
+            System.out.println((i + 1) + ": " + s);
         }
     }
 

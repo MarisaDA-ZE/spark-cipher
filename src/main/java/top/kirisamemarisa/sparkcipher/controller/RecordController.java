@@ -15,7 +15,7 @@ import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.entity.vo.RecordVo;
 import top.kirisamemarisa.sparkcipher.service.IRecordService;
 import top.kirisamemarisa.sparkcipher.util.encrypto.aes.AES256Utils;
-import top.kirisamemarisa.sparkcipher.util.IdUtils;
+import top.kirisamemarisa.sparkcipher.util.SnowflakeUtils;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 
 import javax.annotation.Resource;
@@ -107,7 +107,7 @@ public class RecordController {
         String value = title.getValue();
 
         // 设置ID
-        String snowflakeId = IdUtils.nextIdOne();
+        String snowflakeId = SnowflakeUtils.nextId();
         record.setId(snowflakeId);
         record.setUserId(uid);
         record.setSearchText(value);

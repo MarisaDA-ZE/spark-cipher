@@ -6,14 +6,14 @@ server:
     key-store-password: rvocmimr
     key-password: rvocmimr
 spring:
-  # 数据源配置
+  # 数据源配置 47.109.66.127
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.109.66.127:3306/spark-cipher?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://kmarisa.icu:3306/spark-cipher?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: marisa
     password: $pwdByMySQL6845.
   redis:
-    host: 47.109.66.127
+    host: kmarisa.icu
     port: 6379
     password: $pwdByEcs-redis6795.
     lettuce:

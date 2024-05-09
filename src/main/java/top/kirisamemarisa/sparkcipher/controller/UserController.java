@@ -48,26 +48,27 @@ public class UserController {
      * @param user .
      * @return .
      */
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public MrsResult<?> add(@RequestBody User user) {
         System.out.println("创建用户: " + user);
         // 校验用户名、密码、其它参数有则校验
-        boolean b1 = user.verifyUserName();
-        boolean b2 = user.verifyPassword();
-        if (!b1 || !b2 || !user.verifyNullable()) return MrsResult.failed("校验未通过,请检查参数!");
-
-        String salt = SaltGenerator.generateSalt();
-        String pwd = user.getPassword();
-        pwd = MD5Utils.md5(pwd + salt);
-        String snowflakeId = IdUtils.nextIdOne();
-        user.setId(snowflakeId);
-        user.setLevel(1);
-        user.setPassword(pwd);
-        user.setSalt(salt);
-        user.setCreateTime(new Date());
-        user.setCreateBy(snowflakeId);
-        boolean save = userService.save(user);
-        return save ? MrsResult.ok() : MrsResult.failed();
+//        boolean b1 = user.verifyUserName();
+//        boolean b2 = user.verifyPassword();
+//        if (!b1 || !b2 || !user.verifyNullable()) return MrsResult.failed("校验未通过,请检查参数!");
+//
+//        String salt = SaltGenerator.generateSalt();
+//        String pwd = user.getPassword();
+//        pwd = MD5Utils.md5(pwd + salt);
+//        String snowflakeId = SnowflakeUtils.nextId();
+//        user.setId(snowflakeId);
+//        user.setLevel(1);
+//        user.setPassword(pwd);
+//        user.setSalt(salt);
+//        user.setCreateTime(new Date());
+//        user.setCreateBy(snowflakeId);
+//        boolean save = userService.save(user);
+//        return save ? MrsResult.ok() : MrsResult.failed();
+        return null;
     }
 
 }

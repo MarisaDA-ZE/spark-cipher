@@ -28,6 +28,11 @@ public class SecurityUtils {
      * @return .
      */
     public User getAuthUser() {
+        try {
+
+        }catch (Exception ignored){
+
+        }
         String tk = stk.get();
         System.out.println("thread token: " + tk);
         String uid = TokenUtils.decryptToken(tk, JwtKeys.UID.getKey());

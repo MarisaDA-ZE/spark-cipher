@@ -36,6 +36,26 @@ public class LoginController {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 通过账号密码创建账号
+     *
+     * @param loginVo vo
+     * @return 创建结果
+     */
+    @PutMapping("/accountCreate")
+    public MrsResult<?> accountCreate(@RequestBody LoginVo loginVo) {
+        String resMsg = loginService.accountCreate(loginVo);
+        if (resMsg == null) return MrsResult.ok("创建成功，请返回登录");
+        return MrsResult.failed(resMsg);
+    }
+
+    /**
+     * 通过账号密码的方式登录
+     *
+     * @param loginVo 前端VO
+     * @param req     http请求对象
+     * @return .
+     */
     @PostMapping("/accountLogin")
     public MrsResult<?> login(@RequestBody LoginVo loginVo, HttpServletRequest req) {
         System.out.println("登录对象: " + loginVo);
@@ -43,18 +63,28 @@ public class LoginController {
         return MrsResult.ok("登录成功！", resp);
     }
 
+    /**
+     * 账号登出
+     *
+     * @return .
+     */
     @GetMapping("/logout")
     public MrsResult<?> logout() {
-        User authUser = securityUtils.getAuthUser();
-        System.out.println("退出登录: " + authUser);
-        String uid = authUser.getId();
+        String uid = null;
+        try {
+            User authUser = securityUtils.getAuthUser();
+            System.out.println("退出登录: " + authUser);
+            uid = authUser.getId();
+        } catch (NullPointerException ignored) {
+        }
+
         if (StringUtils.isNotBlank(uid)) {
             redisTemplate.delete(uid);
             redisTemplate.delete(uid + TOKEN_SUFFIX);
             redisTemplate.delete(uid + TypeSuffix.SKP.getTypeSuffix());
             redisTemplate.delete(uid + TypeSuffix.CKP.getTypeSuffix());
         } else {
-            return MrsResult.failed("登录已过期！");
+            return MrsResult.failed("登录已经过期！");
         }
         return MrsResult.ok("退出登录成功！");
     }

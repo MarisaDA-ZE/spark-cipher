@@ -95,11 +95,22 @@ public class User {
         return this.regVerify(regex, this.getUserName());
     }
 
+    public boolean verifyUserName(String userName) {
+        //用户名正则，4到16位（字母，数字，下划线，减号,☆★）
+        String regex = "[a-zA-Z0-9_-☆★]{4,16}";
+        return this.regVerify(regex, getUserName());
+    }
+
     // 密码校验
     public boolean verifyPassword() {
         // 至少6个字符，至少1个大写字母，1个小写字母和1个数字：
         String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z-!@#&*$_.\\d]{6,}";
         return this.regVerify(regex, this.getPassword());
+    }
+    public boolean verifyPassword(String password) {
+        // 至少6个字符，至少1个大写字母，1个小写字母和1个数字：
+        String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z-!@#&*$_.\\d]{6,}";
+        return this.regVerify(regex, getPassword());
     }
 
     // 性别校验
