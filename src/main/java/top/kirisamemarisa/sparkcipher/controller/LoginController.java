@@ -8,6 +8,7 @@ import top.kirisamemarisa.sparkcipher.entity.enums.TypeSuffix;
 import top.kirisamemarisa.sparkcipher.entity.*;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
+import top.kirisamemarisa.sparkcipher.entity.vo.PhoneCodeVo;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 
@@ -50,6 +51,20 @@ public class LoginController {
     }
 
     /**
+     * 向对应手机号发送验证码
+     *
+     * @param phoneNo 目标手机号
+     * @return 发送结果
+     */
+    @GetMapping("/getCodePhone")
+    public MrsResult<?> getCodePhone(@RequestParam(name = "phoneNo") String phoneNo) {
+        PhoneCodeVo phoneCodeVo = loginService.sendCodePhone(phoneNo);
+        if (!phoneCodeVo.isStatus()) return MrsResult.failed(phoneCodeVo.getMsg());
+        System.out.println("验证码: " + phoneCodeVo.getCode());
+        return MrsResult.ok(phoneCodeVo.getMsg());
+    }
+
+    /**
      * 通过账号密码的方式登录
      *
      * @param loginVo 前端VO
@@ -57,9 +72,23 @@ public class LoginController {
      * @return .
      */
     @PostMapping("/accountLogin")
-    public MrsResult<?> login(@RequestBody LoginVo loginVo, HttpServletRequest req) {
+    public MrsResult<?> accountLogin(@RequestBody LoginVo loginVo, HttpServletRequest req) {
         System.out.println("登录对象: " + loginVo);
         MrsLResp resp = loginService.loginByAccount(loginVo, req);
+        return MrsResult.ok("登录成功！", resp);
+    }
+
+    /**
+     * 通过手机号验证码的方式登录
+     *
+     * @param loginVo 前端VO
+     * @param req     http请求对象
+     * @return .
+     */
+    @PostMapping("/phoneLogin")
+    public MrsResult<?> phoneLogin(@RequestBody LoginVo loginVo, HttpServletRequest req) {
+        System.out.println("登录对象: " + loginVo);
+        MrsLResp resp = loginService.loginByPhone(loginVo, req);
         return MrsResult.ok("登录成功！", resp);
     }
 
@@ -70,14 +99,9 @@ public class LoginController {
      */
     @GetMapping("/logout")
     public MrsResult<?> logout() {
-        String uid = null;
-        try {
-            User authUser = securityUtils.getAuthUser();
-            System.out.println("退出登录: " + authUser);
-            uid = authUser.getId();
-        } catch (NullPointerException ignored) {
-        }
-
+        User authUser = securityUtils.getAuthUser();
+        System.out.println("退出登录: " + authUser);
+        String uid = authUser.getId();
         if (StringUtils.isNotBlank(uid)) {
             redisTemplate.delete(uid);
             redisTemplate.delete(uid + TOKEN_SUFFIX);

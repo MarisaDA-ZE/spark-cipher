@@ -19,14 +19,14 @@ public class MrsResult<T> implements Serializable {
 
     private int code;
     private boolean status;
-    private String time;
+    private long timestamp;
     private String msg;
     private T data;
 
     public MrsResult(int code) {
         this.code = code;
         this.status = true;
-        this.time = format(new Date());
+        this.timestamp = System.currentTimeMillis();
         this.msg = "操作成功！";
         this.data = null;
     }
@@ -34,7 +34,7 @@ public class MrsResult<T> implements Serializable {
     public MrsResult(String msg) {
         this.code = 200;
         this.status = true;
-        this.time = format(new Date());
+        this.timestamp = System.currentTimeMillis();
         this.msg = msg;
         this.data = null;
     }
@@ -42,7 +42,7 @@ public class MrsResult<T> implements Serializable {
     public MrsResult(T data) {
         this.code = 200;
         this.status = true;
-        this.time = format(new Date());
+        this.timestamp = System.currentTimeMillis();
         this.msg = "操作成功！";
         this.data = data;
     }
@@ -50,7 +50,7 @@ public class MrsResult<T> implements Serializable {
     public MrsResult(int code, String msg) {
         this.code = code;
         this.status = true;
-        this.time = format(new Date());
+        this.timestamp = System.currentTimeMillis();
         this.msg = msg;
         this.data = null;
     }
@@ -58,7 +58,7 @@ public class MrsResult<T> implements Serializable {
     public MrsResult(int code, boolean status, String msg) {
         this.code = code;
         this.status = status;
-        this.time = format(new Date());
+        this.timestamp = System.currentTimeMillis();
         this.msg = msg;
         this.data = null;
     }
@@ -66,7 +66,7 @@ public class MrsResult<T> implements Serializable {
     public MrsResult(int code, String msg, T data) {
         this.code = code;
         this.status = true;
-        this.time = format(new Date());
+        this.timestamp = System.currentTimeMillis();
         this.msg = msg;
         this.data = data;
     }
@@ -74,7 +74,7 @@ public class MrsResult<T> implements Serializable {
     public MrsResult(int code, boolean status, Date dateTime, String msg, T data) {
         this.code = code;
         this.status = status;
-        this.time = format(dateTime);
+        this.timestamp = dateTime.getTime();
         this.msg = msg;
         this.data = data;
     }

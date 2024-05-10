@@ -1,22 +1,15 @@
 package top.kirisamemarisa.sparkcipher.interceptor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import top.kirisamemarisa.sparkcipher.entity.enums.JwtKeys;
-import top.kirisamemarisa.sparkcipher.entity.User;
+import top.kirisamemarisa.sparkcipher.entity.dto.CertLoginDto;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
-import top.kirisamemarisa.sparkcipher.service.IUserService;
-import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
-import top.kirisamemarisa.sparkcipher.util.TokenUtils;
+import top.kirisamemarisa.sparkcipher.service.ICertificationService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.TimeUnit;
-
-import static top.kirisamemarisa.sparkcipher.common.Constants.*;
 
 
 /**
@@ -28,9 +21,8 @@ import static top.kirisamemarisa.sparkcipher.common.Constants.*;
 public class LoginHandlerInterceptor implements HandlerInterceptor {
 
     @Resource
-    private IUserService userService;
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    private ICertificationService certificationService;
+
 
     /**
      * 在Controller之前调用
@@ -42,39 +34,26 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-
-        System.out.println("请求方式: " + request.getMethod());
-        System.out.println("请求地址: " + request.getHeader("HOST") + request.getRequestURI());
+        String method = request.getMethod();
+        System.out.println(method + ", " + request.getHeader("HOST") + request.getRequestURI());
         // 放行所有options请求
         if ("OPTIONS".equals(request.getMethod())) return true;
-        String token = request.getHeader("Authorization");
-        // 请求头未携带token
-        if (StringUtils.isBlank(token) || StringUtils.isBlank(token.replaceAll("Bearer ", ""))) {
+
+        String rawToken = request.getHeader("Authorization");
+        if (StringUtils.isBlank(rawToken)) {
             throw new UnauthorizedException("token不存在！");
         }
-        token = token.replaceAll("Bearer ", "");
-        // 用户ID
-        String uid = TokenUtils.decryptToken(token, JwtKeys.UID.getKey());
-        String loggedToken = (String) redisTemplate.opsForValue().get(uid + TOKEN_SUFFIX);
 
-        // token校验失败(已过期)或者取不出ID 或 Redis中这个Token不正确
-        if (!TokenUtils.verify(token) || StringUtils.isBlank(uid) || !TokenUtils.verify(loggedToken)) {
-            throw new UnauthorizedException("token已过期！");
+        String token = rawToken.replaceFirst("Bearer ", "");
+        if (StringUtils.isBlank(token)) {
+            throw new UnauthorizedException("无效的token格式");
         }
 
-        // token 拉黑操作(还没做)
-        SecurityUtils.stk.set(token);
-
-        // 登录信息不为空 将之前的用户挤下线
-        // 检查是否用户登录
-        // 校验登录信息 ip地址和操作设备必须和登录时保持一致
-        // token与记录的不一致
-
-        // 最后如果上述所有校验都没有问题，则 刷新 redis中该用户的过期时间
-        User dbUser = userService.getById(uid);
-        redisTemplate.opsForValue().set(uid + USER_SUFFIX, dbUser, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
-        // 更新token
-        redisTemplate.opsForValue().set(uid + TOKEN_SUFFIX, token, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
+        // 到这里前端的token是符合规范的，下一步将token交给认证中心
+        CertLoginDto loginStatus = certificationService.verifyTokenInfo(token);
+        if (!loginStatus.isStatus()) {
+            throw new UnauthorizedException(loginStatus.getMsg());
+        }
         return true;
     }
 }

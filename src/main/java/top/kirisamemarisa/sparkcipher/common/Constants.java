@@ -11,13 +11,22 @@ import java.util.List;
 public class Constants {
 
     // token的过期时间(单位秒)
-    public static final Integer TOKEN_EXPIRE_TIME = 30 * 60;
+    public static final Integer TOKEN_EXPIRE_TIME = 10 * 60;
     // 密钥对过期时间
     public static final Integer KEYPAIR_EXPIRE_TIME = 30 * 60;
+
+    // 一天中手机验证码的最大发送次数
+    public static final Integer PHONE_CODE_COUNT = 15;  // 15
+    // 手机验证码过期时间(15分钟)
+    public static final Integer PHONE_CODE_EXPIRE_TIME = 1000 * 60 * 15;
+
+    // 一天所有的秒数
+    public static final Integer ONE_DAY_SECONDS = 60 * 60 * 24;
 
     // redis中token类的后缀
     public static final String USER_SUFFIX = ".user";
     public static final String TOKEN_SUFFIX = ".token";
+    public static final String PHONE_VERIFY_SUFFIX = ".verify-code";
 
     // 性别 0.未知性别,1.男性,2.女性
     public static final List<Integer> USER_GENDER = Arrays.asList(0, 1, 2);

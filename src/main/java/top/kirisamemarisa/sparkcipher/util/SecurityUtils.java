@@ -1,6 +1,5 @@
 package top.kirisamemarisa.sparkcipher.util;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -28,16 +27,16 @@ public class SecurityUtils {
      * @return .
      */
     public User getAuthUser() {
-        try {
-
-        }catch (Exception ignored){
-
-        }
         String tk = stk.get();
         System.out.println("thread token: " + tk);
+        if (StringUtils.isBlank(tk) || !TokenUtils.verify(tk)) return null;
         String uid = TokenUtils.decryptToken(tk, JwtKeys.UID.getKey());
+        if (StringUtils.isBlank(uid)) return null;
         Object u = redisTemplate.opsForValue().get(uid + USER_SUFFIX);
-        if (StringUtils.isBlank(uid) || ObjectUtils.isEmpty(u)) return null;
-        return (User) u;
+        try {
+            return (User) u;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

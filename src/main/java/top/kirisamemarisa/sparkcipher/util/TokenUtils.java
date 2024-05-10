@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import top.kirisamemarisa.sparkcipher.entity.enums.JwtKeys;
 
 import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_EXPIRE_TIME;
@@ -99,6 +100,7 @@ public class TokenUtils {
      * @return 校验结果
      */
     public static boolean verify(String token) {
+        if (StringUtils.isBlank(token)) return false;
         try {
             Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
             JWTVerifier verifier = JWT.require(algorithm).build();

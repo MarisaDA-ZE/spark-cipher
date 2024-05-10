@@ -25,7 +25,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private String pathPrefix;
     private final String[] AUTH_EXCLUDE_PATH = {
             "/crypto/**",   // 密钥服务
-            "/login/**",    // 用户登录
+            "/login/accountLogin",      // 用户登录(不能写/login/**，因为登出接口不放行)
+            "/login/phoneLogin",        // 用户登录（手机号）
+            "/login/accountCreate",     // 用户注册
+            "/login/getCodePhone",      // 获取手机号验证码
             "/user/add",    // 添加用户
     };
 

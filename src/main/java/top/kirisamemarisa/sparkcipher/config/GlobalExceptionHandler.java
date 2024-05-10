@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
-import top.kirisamemarisa.sparkcipher.exception.NotFoundException;
-import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
+import top.kirisamemarisa.sparkcipher.exception.*;
 
 /**
  * @Author Marisa
@@ -20,6 +19,7 @@ public class GlobalExceptionHandler {
     /**
      * 请求要求用户的身份认证
      * <p>401身份认证失败</p>
+     *
      * @param e 异常名称
      * @return .
      */
@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
     /**
      * 资源不存在
      * <p>404资源未找到</p>
+     *
      * @param e .
      * @return .
      */
@@ -41,16 +42,42 @@ public class GlobalExceptionHandler {
         return MrsResult.failed(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
-//    /**
-//     * 权限不足
-//     *
-//     * @param e .
-//     * @return .
-//     */
-//    @ExceptionHandler(ForbiddenException.class)
-//    public MrsResult<?> forbiddenException(ForbiddenException e) {
-//        return MrsResult.failed(403, e.getMessage());
-//    }
+    /**
+     * 验证码过期
+     *
+     * @param e 异常对象
+     * @return 返回前端的结果
+     */
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(CodeExpiredException.class)
+    public MrsResult<?> forbiddenException(CodeExpiredException e) {
+        return MrsResult.failed(HttpStatus.FORBIDDEN.value(), e.getMessage());
+    }
+
+    /**
+     * 权限不足
+     *
+     * @param e .
+     * @return .
+     */
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenException.class)
+    public MrsResult<?> forbiddenException(ForbiddenException e) {
+        return MrsResult.failed(HttpStatus.FORBIDDEN.value(), e.getMessage());
+    }
+
+    /**
+     * 服务器内部错误
+     *
+     * @param e .
+     * @return .
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(InternalServerErrorException.class)
+    public MrsResult<?> internalServerErrorException(InternalServerErrorException e) {
+        return MrsResult.failed(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+    }
+
 //
 //    /**
 //     * 重复登录
