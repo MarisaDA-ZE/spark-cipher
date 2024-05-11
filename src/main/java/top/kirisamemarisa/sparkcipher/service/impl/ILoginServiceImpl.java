@@ -64,6 +64,7 @@ public class ILoginServiceImpl implements ILoginService {
         String email = loginVo.getEmail();
 
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) return "请填写用户名密码";
+        if (StringUtils.isBlank(phoneNo) && StringUtils.isBlank(email)) return "请填写手机号或邮箱";
 
         User queryUser = new User();
         queryUser.setAccount(account);
@@ -75,8 +76,14 @@ public class ILoginServiceImpl implements ILoginService {
         User savedUser = new User();
         savedUser.setAccount(account);
         savedUser.setNickName(loginVo.getNickName());
-        if (StringUtils.isNotBlank(phoneNo)) savedUser.setPhone(phoneNo);
-        if (StringUtils.isNotBlank(email)) savedUser.setEmail(email);
+        if (StringUtils.isNotBlank(phoneNo)) {
+            savedUser.setPhone(phoneNo);
+            savedUser.setOriginalPhone(phoneNo);
+        }
+        if (StringUtils.isNotBlank(email)) {
+            savedUser.setEmail(email);
+            savedUser.setOriginalEmail(email);
+        }
 
         boolean b1 = savedUser.verifyAccount(account);
         boolean b2 = savedUser.verifyPassword(password);

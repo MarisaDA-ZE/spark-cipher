@@ -97,9 +97,7 @@ public class User {
         boolean b2 = this.getPassword() == null || verifyPassword();
         boolean b3 = this.getPhone() == null || verifyPhone();
         boolean b4 = this.getEmail() == null || verifyEmail();
-        boolean b5 = this.getGender() == null || verifyGender();
-        boolean b6 = this.getLevel() == null || verifyLevel();
-        return b1 && b2 && (b3 || b4) && b5 && b6;
+        return b1 && b2 && (b3 || b4);
     }
 
     // 账号正则校验
