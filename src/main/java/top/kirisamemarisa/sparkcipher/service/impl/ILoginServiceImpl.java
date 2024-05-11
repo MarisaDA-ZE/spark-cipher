@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
 import top.kirisamemarisa.sparkcipher.entity.dto.PhoneCodeDto;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.entity.User;
@@ -26,11 +27,15 @@ import top.kirisamemarisa.sparkcipher.util.TokenUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static top.kirisamemarisa.sparkcipher.common.Constants.*;
@@ -65,7 +70,7 @@ public class ILoginServiceImpl implements ILoginService {
         if (ObjectUtils.isNotEmpty(dbUser)) return "当前账户已存在";
 
         User savedUser = new User();
-        boolean b1 = savedUser.verifyUserName(account);
+        boolean b1 = savedUser.verifyAccount(account);
         boolean b2 = savedUser.verifyPassword(password);
         if (!b1 || !b2 || !savedUser.verifyNullable()) return "校验未通过,请检查参数!";
 
@@ -147,6 +152,43 @@ public class ILoginServiceImpl implements ILoginService {
         codeDto.setLastSendTime(now);
         redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
         return PhoneCodeVo.success(phoneNo, randomCode);
+    }
+
+    @Override
+    public int getCountByKey(User user) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        Map<String, Object> keyMap = getUserKeys(user);
+        keyMap.forEach(queryWrapper::eq);
+        List<User> list = userService.list(queryWrapper);
+        return list.size();
+    }
+
+    /**
+     * 查看User对象中的唯一键
+     *
+     * @param user user对象
+     * @return 返回值，格式是{key: value}的形式，key是User表中的键，value是前端传的值
+     */
+    private Map<String, Object> getUserKeys(User user) {
+        Map<String, Object> result = new HashMap<>();
+        Class<User> clazz = User.class;
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            UniqueField annotation = field.getAnnotation(UniqueField.class);
+            if (annotation != null) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(user);
+                    if (ObjectUtils.isNotEmpty(value)) {
+                        String fieldName = MrsUtil.columnNameTranslate(field.getName(), user);
+                        result.put(fieldName, value);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
     }
 
     @Override

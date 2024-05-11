@@ -1,5 +1,6 @@
 package top.kirisamemarisa.sparkcipher.service;
 
+import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 import top.kirisamemarisa.sparkcipher.entity.vo.PhoneCodeVo;
@@ -37,6 +38,15 @@ public interface ILoginService {
      * @return 验证码
      */
     PhoneCodeVo sendCodePhone(String phoneNo);
+
+    /**
+     * 根据key查询是否有重复项
+     * <p>这个方法只会匹配User对象中含有@UniqueField注解且值是非空的键</p>
+     *
+     * @param user 用户实体对象
+     * @return 键值重复数量
+     */
+    int getCountByKey(User user);
 
     /**
      * 手机号验证码登录

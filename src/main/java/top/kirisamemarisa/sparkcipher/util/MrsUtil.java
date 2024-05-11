@@ -1,8 +1,14 @@
 package top.kirisamemarisa.sparkcipher.util;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @Author Marisa
@@ -75,4 +81,30 @@ public class MrsUtil {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
+
+    public static <T> String columnNameTranslate(String column, T entity) {
+        // 获取实体类的Class对象
+        Class<?> clazz = entity.getClass();
+
+        Field[] fields = clazz.getDeclaredFields();
+        Set<String> keySet = Arrays.stream(fields)
+                .map(Field::getName)
+                .collect(Collectors.toSet());
+        if (!keySet.contains(column)) return null;
+        for (Field field : fields) {
+            String name = field.getName();
+            if ((name + "").equals(column)) {
+                TableField annotation = field.getAnnotation(TableField.class);
+                String fieldName = name;
+                if (annotation != null) {
+                    fieldName = annotation.value();
+                }
+                return fieldName.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+            }
+        }
+        // 字段不存在或没有@TableField注解时返回空
+        return null;
+    }
+
 }

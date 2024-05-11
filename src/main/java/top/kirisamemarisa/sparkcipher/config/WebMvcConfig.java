@@ -29,8 +29,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
             "/login/phoneLogin",        // 用户登录（手机号）
             "/login/accountCreate",     // 用户注册
             "/login/getCodePhone",      // 获取手机号验证码
+            "/login/getCountByUserKey", // 查看值在数据库中是否有重复
             "/user/add",    // 添加用户
     };
+
 
     @Resource
     private LoginHandlerInterceptor loginHandlerInterceptor;

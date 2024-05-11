@@ -15,6 +15,7 @@ import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+
 import static top.kirisamemarisa.sparkcipher.common.Constants.TOKEN_SUFFIX;
 
 /**
@@ -90,6 +91,18 @@ public class LoginController {
         System.out.println("登录对象: " + loginVo);
         MrsLResp resp = loginService.loginByPhone(loginVo, req);
         return MrsResult.ok("登录成功！", resp);
+    }
+
+    /**
+     * 查看某个值在库中的数量
+     *
+     * @param user 键名
+     * @return .
+     */
+    @PostMapping("/getCountByUserKey")
+    public MrsResult<?> getCountByUserKey(@RequestBody User user) {
+        int keyCount = loginService.getCountByKey(user);
+        return MrsResult.ok("查询成功", keyCount);
     }
 
     /**

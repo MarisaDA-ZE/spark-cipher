@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.ToString;
-import top.kirisamemarisa.sparkcipher.aop.RecordTranslate;
+import top.kirisamemarisa.sparkcipher.annotations.RecordTranslate;
 import top.kirisamemarisa.sparkcipher.aop.enums.FIELD_TYPE;
 import top.kirisamemarisa.sparkcipher.entity.Record;
 import top.kirisamemarisa.sparkcipher.entity.RecordItem;

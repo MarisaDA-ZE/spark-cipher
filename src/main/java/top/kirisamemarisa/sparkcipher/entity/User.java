@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.ToString;
+import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
 import top.kirisamemarisa.sparkcipher.common.Constants;
 
 import java.util.Date;
@@ -22,8 +23,12 @@ public class User {
     @TableId(type = IdType.AUTO)
     private String id;
 
-    // 用户名
-    private String userName;
+    // 账号
+    @UniqueField
+    private String account;
+
+    // 昵称
+    private String nickName;
 
     // 密码
     private String password;
@@ -35,13 +40,23 @@ public class User {
     private String salt;
 
     // 手机号
+    @UniqueField
     private String phone;
+
+    // 原始注册手机号
+    @UniqueField
+    private String originalPhone;
 
     // 等级
     private Integer level = 1;
 
     // 邮箱
+    @UniqueField
     private String email;
+
+    // 原始注册邮箱
+    @UniqueField
+    private String originalEmail;
 
     // 头像地址
     private String avatar;
@@ -64,13 +79,12 @@ public class User {
      * @return .
      */
     public boolean verify() {
-        boolean b1 = verifyUserName();
-        boolean b2 = verifyPassword();
-        boolean b3 = verifyPhone();
-        boolean b4 = verifyEmail();
-        boolean b5 = verifyGender();
-        boolean b6 = verifyLevel();
-        return b1 && b2 && b3 && b4 && b5 && b6;
+        boolean b1 = verifyAccount();
+        boolean b2 = verifyNickName();
+        boolean b3 = verifyPassword();
+        boolean b4 = verifyPhone();
+        boolean b5 = verifyEmail();
+        return b1 && b2 && b3 && (b4 || b5);
     }
 
     /**
@@ -79,38 +93,58 @@ public class User {
      * @return .
      */
     public boolean verifyNullable() {
-        boolean b1 = this.getUserName() == null || verifyUserName();
+        boolean b1 = this.getAccount() == null || verifyAccount();
         boolean b2 = this.getPassword() == null || verifyPassword();
         boolean b3 = this.getPhone() == null || verifyPhone();
         boolean b4 = this.getEmail() == null || verifyEmail();
         boolean b5 = this.getGender() == null || verifyGender();
         boolean b6 = this.getLevel() == null || verifyLevel();
-        return b1 && b2 && b3 && b4 && b5 && b6;
+        return b1 && b2 && (b3 || b4) && b5 && b6;
     }
 
-    // 用户名校验
-    public boolean verifyUserName() {
+    // 账号正则校验
+    public boolean verifyAccount() {
+        // if (StringUtils.isBlank(this.getAccount())) return false;
         //用户名正则，4到16位（字母，数字，下划线，减号,☆★）
         String regex = "[a-zA-Z0-9_-☆★]{4,16}";
-        return this.regVerify(regex, this.getUserName());
+        return this.regVerify(regex, this.getAccount());
     }
 
-    public boolean verifyUserName(String userName) {
+    public boolean verifyAccount(String userName) {
+        // if (StringUtils.isBlank(this.getAccount())) return false;
         //用户名正则，4到16位（字母，数字，下划线，减号,☆★）
         String regex = "[a-zA-Z0-9_-☆★]{4,16}";
-        return this.regVerify(regex, getUserName());
+        return this.regVerify(regex, userName);
+    }
+
+    // 昵称正则校验
+    public boolean verifyNickName() {
+        // if (StringUtils.isBlank(this.getNickName())) return false;
+        //用户名正则，4到16位（字母，数字，下划线，减号,☆★）
+        String regex = "[a-zA-Z0-9_-☆★]{4,16}";
+        return this.regVerify(regex, this.getNickName());
+    }
+
+    public boolean verifyNickName(String nickName) {
+        // if (StringUtils.isBlank(this.getNickName())) return false;
+        //用户名正则，4到16位（字母，数字，下划线，减号,☆★）
+        String regex = "[a-zA-Z0-9_-☆★]{4,16}";
+        return this.regVerify(regex, nickName);
     }
 
     // 密码校验
     public boolean verifyPassword() {
+        // if (StringUtils.isBlank(this.getPassword())) return false;
         // 至少6个字符，至少1个大写字母，1个小写字母和1个数字：
         String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z-!@#&*$_.\\d]{6,}";
         return this.regVerify(regex, this.getPassword());
     }
+
     public boolean verifyPassword(String password) {
+        // if (StringUtils.isBlank(this.getPassword())) return false;
         // 至少6个字符，至少1个大写字母，1个小写字母和1个数字：
         String regex = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z-!@#&*$_.\\d]{6,}";
-        return this.regVerify(regex, getPassword());
+        return this.regVerify(regex, password);
     }
 
     // 性别校验
@@ -125,6 +159,7 @@ public class User {
 
     // 手机号校验
     public boolean verifyPhone() {
+        // if (StringUtils.isBlank(this.getPhone())) return false;
         // 手机号码正则
         String regex = "(?:(?:\\+|00)86)?1(?:(?:3[\\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\\d])|(?:9[1589]))\\d{8}";
         return this.regVerify(regex, this.getPhone());
@@ -132,6 +167,7 @@ public class User {
 
     // 邮箱校验
     public boolean verifyEmail() {
+        // if (StringUtils.isBlank(this.getEmail())) return false;
         //Email正则
         String regex = "([A-Za-z0-9_\\-.])+@([A-Za-z0-9_\\-.])+\\.([A-Za-z]{2,4})";
         return this.regVerify(regex, this.getEmail());

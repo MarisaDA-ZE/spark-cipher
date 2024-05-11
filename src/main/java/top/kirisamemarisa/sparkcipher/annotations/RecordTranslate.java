@@ -1,4 +1,4 @@
-package top.kirisamemarisa.sparkcipher.aop;
+package top.kirisamemarisa.sparkcipher.annotations;
 
 import top.kirisamemarisa.sparkcipher.aop.enums.FIELD_TYPE;
 

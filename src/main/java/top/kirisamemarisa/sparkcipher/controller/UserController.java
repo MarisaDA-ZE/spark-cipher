@@ -1,15 +1,19 @@
 package top.kirisamemarisa.sparkcipher.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
 import top.kirisamemarisa.sparkcipher.util.*;
-import top.kirisamemarisa.sparkcipher.util.encrypto.md5.MD5Utils;
 
 import javax.annotation.Resource;
-import java.util.Date;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Marisa
@@ -42,33 +46,7 @@ public class UserController {
         return MrsResult.ok(list);
     }
 
-    /**
-     * 添加一个用户（注册）
-     *
-     * @param user .
-     * @return .
-     */
-//    @PostMapping("/add")
-    public MrsResult<?> add(@RequestBody User user) {
-        System.out.println("创建用户: " + user);
-        // 校验用户名、密码、其它参数有则校验
-//        boolean b1 = user.verifyUserName();
-//        boolean b2 = user.verifyPassword();
-//        if (!b1 || !b2 || !user.verifyNullable()) return MrsResult.failed("校验未通过,请检查参数!");
-//
-//        String salt = SaltGenerator.generateSalt();
-//        String pwd = user.getPassword();
-//        pwd = MD5Utils.md5(pwd + salt);
-//        String snowflakeId = SnowflakeUtils.nextId();
-//        user.setId(snowflakeId);
-//        user.setLevel(1);
-//        user.setPassword(pwd);
-//        user.setSalt(salt);
-//        user.setCreateTime(new Date());
-//        user.setCreateBy(snowflakeId);
-//        boolean save = userService.save(user);
-//        return save ? MrsResult.ok() : MrsResult.failed();
-        return null;
-    }
+
+
 
 }
