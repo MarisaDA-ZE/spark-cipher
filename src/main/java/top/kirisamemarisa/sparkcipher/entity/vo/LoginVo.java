@@ -15,6 +15,7 @@ import java.util.Date;
 @ToString
 public class LoginVo {
     private String account;     // 账户
+    private String nickName;    // 昵称
     private String password;    // 密码
     private String phoneNo;     // 手机号
     private String email;       // 邮箱

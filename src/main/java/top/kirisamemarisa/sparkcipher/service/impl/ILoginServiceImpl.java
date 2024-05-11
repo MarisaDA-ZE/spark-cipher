@@ -61,15 +61,23 @@ public class ILoginServiceImpl implements ILoginService {
         String account = loginVo.getAccount();
         String password = loginVo.getPassword();
         String phoneNo = loginVo.getPhoneNo();
+        String email = loginVo.getEmail();
 
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) return "请填写用户名密码";
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("USER_NAME", account);
-        if (StringUtils.isNotBlank(phoneNo)) queryWrapper.eq("PHONE", phoneNo);
-        User dbUser = userService.getOne(queryWrapper);
-        if (ObjectUtils.isNotEmpty(dbUser)) return "当前账户已存在";
+
+        User queryUser = new User();
+        queryUser.setAccount(account);
+        queryUser.setPhone(phoneNo);
+        queryUser.setEmail(email);
+        int keyCount = this.getCountByKey(queryUser);
+        if (keyCount > 0) return "账户已存在";
 
         User savedUser = new User();
+        savedUser.setAccount(account);
+        savedUser.setNickName(loginVo.getNickName());
+        if (StringUtils.isNotBlank(phoneNo)) savedUser.setPhone(phoneNo);
+        if (StringUtils.isNotBlank(email)) savedUser.setEmail(email);
+
         boolean b1 = savedUser.verifyAccount(account);
         boolean b2 = savedUser.verifyPassword(password);
         if (!b1 || !b2 || !savedUser.verifyNullable()) return "校验未通过,请检查参数!";
@@ -158,7 +166,7 @@ public class ILoginServiceImpl implements ILoginService {
     public int getCountByKey(User user) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         Map<String, Object> keyMap = getUserKeys(user);
-        keyMap.forEach(queryWrapper::eq);
+        keyMap.forEach((k, v) -> queryWrapper.eq(k, v).or());
         List<User> list = userService.list(queryWrapper);
         return list.size();
     }
