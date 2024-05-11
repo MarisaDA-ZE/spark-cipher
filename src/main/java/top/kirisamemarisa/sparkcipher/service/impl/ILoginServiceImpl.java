@@ -108,7 +108,7 @@ public class ILoginServiceImpl implements ILoginService {
         System.out.println(loginVo);
         String account = loginVo.getAccount();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("USER_NAME", account);
+        queryWrapper.eq("ACCOUNT", account);
         User dbUser = userService.getOne(queryWrapper);
         System.out.println(dbUser);
         if (dbUser == null) throw new NotFoundException("用户不存在！");
