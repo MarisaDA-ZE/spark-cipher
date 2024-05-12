@@ -94,6 +94,7 @@ public class ILoginServiceImpl implements ILoginService {
         String salt = SaltGenerator.generateSalt();
         password = MD5Utils.md5(password + salt);
         savedUser.setId(snowflakeId);
+        savedUser.setNickName(savedUser.getAccount());
         savedUser.setLevel(1);
         savedUser.setPassword(password);
         savedUser.setSalt(salt);
