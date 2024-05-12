@@ -14,7 +14,8 @@ import java.util.Date;
 @ToString
 public class UserVo {
     private String id;          // ID
-    private String userName;    // 用户名
+    private String account;    // 用户名
+    private String nickName;    // 用户名
     private String gender;      // 性别
     private String phone;       // 手机号
     private Integer level;      // 等级
