@@ -28,7 +28,7 @@ public class MrsSMSUtil {
     static final String TEMPLATE_CODE = "SMS_465971659";
 
      static {
-        String fileName = "xxx.properties";
+        String fileName = "private/mrs-alibaba.properties";
         MrsPropertiesReader.loadProperties(fileName, MrsSMSUtil.class);
      }
 
