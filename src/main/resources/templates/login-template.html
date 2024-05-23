@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>验证码邮件</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+<h2 style="font-size: 32px; line-height: 200%;">欢迎使用火花密码</h2>
+<p>您好，<span th:text="${userName}"></span>，您的验证码为：<strong th:text="${code}"></strong>。</p>
+<p>请妥善保管此验证码，并在有效期内使用。</p>
+<p>有效期：15分钟</p>
+<p>如果这不是您请求的操作，请忽略此邮件。</p>
+</body>
+</html>

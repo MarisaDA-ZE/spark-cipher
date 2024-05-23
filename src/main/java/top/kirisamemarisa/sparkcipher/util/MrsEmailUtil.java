@@ -1,4 +1,5 @@
 package top.kirisamemarisa.sparkcipher.util;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,6 +11,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,7 +28,8 @@ public class MrsEmailUtil {
     private JavaMailSender javaMailSender;
     @Resource
     private TemplateEngine templateEngine;
-    private static final String FROM_MAIL = "3038488053@qq.com";
+    @Value("${spring.mail.sender}")
+    private String FROM_MAIL;
 
     /**
      * 简单文本邮件
@@ -49,17 +52,26 @@ public class MrsEmailUtil {
         mailSender.send(message);
     }
 
+
+    public void sendCodeEmail(String target,String userName, String code){
+        Map<String, String> map = new HashMap<>();
+        map.put("userName", userName);
+        map.put("code", code);
+        sendHTMLEmail(map, target, "验证码", "login-template");
+
+    }
+
     /**
      * 根据模板发送邮件
-     * @param content   邮件内容
+     * @param ctx       邮件内容
      * @param target    收件人邮箱
      * @param subject   邮件主题（标题）
      * @param template  模板路径（不带后缀名）
      */
-    public void sendHTMLEmail(Map<String, Object> content, String target, String subject, String template) {
+    public void sendHTMLEmail(Map<String, ?> ctx, String target, String subject, String template) {
         Context context = new Context();
-        for (String key : content.keySet()) {
-            context.setVariable(key, content.get(key));
+        for (String key : ctx.keySet()) {
+            context.setVariable(key, ctx.get(key));
         }
         // 使用Thymeleaf模板引擎处理模板
         String htmlContent = templateEngine.process(template, context);
@@ -102,5 +114,4 @@ public class MrsEmailUtil {
             e.printStackTrace();
         }
     }
-
 }
