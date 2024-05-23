@@ -22,7 +22,7 @@ public class MrsPropertiesReader {
      * <p>注意：这个方法很可能不支持多线程，多个线程同时调用装载不同的值可能要遭</p>
      */
     public static <T> void loadProperties(String fileName, Class<T> clazz) {
-        Resource resource = new ClassPathResource(fileName, ClassLoader.getSystemClassLoader());
+        Resource resource = new ClassPathResource(fileName);
         try {
             Properties properties = PropertiesLoaderUtils.loadProperties(resource);
             T instance = clazz.getDeclaredConstructor().newInstance();
