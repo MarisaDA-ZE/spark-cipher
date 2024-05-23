@@ -19,13 +19,13 @@ import java.util.concurrent.ExecutionException;
 public class MrsSMSUtil {
 
     @StaticValue("mrs.alibaba.access-name")
-    static String ACCESS_NAME;
+    private static String ACCESS_NAME;
     @StaticValue("mrs.alibaba.access-key-id")
-    static String ACCESS_KEY_ID;
+    private static String ACCESS_KEY_ID;
     @StaticValue("mrs.alibaba.access-key-secret")
-    static String ACCESS_KEY_SECRET;
+    private static String ACCESS_KEY_SECRET;
 
-    static final String TEMPLATE_CODE = "SMS_465971659";
+    private static final String TEMPLATE_CODE = "SMS_465971659";
 
      static {
         String fileName = "private/mrs-alibaba.properties";
@@ -80,8 +80,10 @@ public class MrsSMSUtil {
     }
 
     public static void main(String[] args) throws Exception {
+        System.out.println(MrsSMSUtil.ACCESS_NAME);
+        System.out.println(MrsSMSUtil.ACCESS_KEY_ID);
+        System.out.println(MrsSMSUtil.ACCESS_KEY_SECRET);
         // boolean isSuccess = sendPhoneCode("18384669885", "526785");
-        // System.out.println(isSuccess);
     }
 
 }

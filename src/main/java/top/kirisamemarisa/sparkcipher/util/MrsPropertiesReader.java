@@ -16,10 +16,12 @@ public class MrsPropertiesReader {
 
     /**
      * 装载属性文件
-     * @param fileName  文件路径
+     *
+     * @param fileName 文件路径
      * @param clazz    目标类
+     * <p>注意：这个方法很可能不支持多线程，多个线程同时调用装载不同的值可能要遭</p>
      */
-    public static <T> T loadProperties(String fileName, Class<T> clazz) {
+    public static <T> void loadProperties(String fileName, Class<T> clazz) {
         Resource resource = new ClassPathResource(fileName, ClassLoader.getSystemClassLoader());
         try {
             Properties properties = PropertiesLoaderUtils.loadProperties(resource);
@@ -34,11 +36,10 @@ public class MrsPropertiesReader {
                         field.set(instance, value);
                     } else {
                         System.out.println("值未找到");
-                        return null;
+                        return;
                     }
                 }
             }
-            return instance;
         } catch (Exception e) {
             throw new RuntimeException("资源不存在！", e);
         }
