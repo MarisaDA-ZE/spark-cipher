@@ -22,6 +22,17 @@ spring:
         max-wait: -1ms
         max-idle: 8
         min-idle: 0
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 3038488053@qq.com
+    password: mhaanjesogfnddia
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
 
 # 数据库名称
 project:
