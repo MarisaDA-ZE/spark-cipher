@@ -8,7 +8,7 @@ import top.kirisamemarisa.sparkcipher.entity.enums.TypeSuffix;
 import top.kirisamemarisa.sparkcipher.entity.*;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
-import top.kirisamemarisa.sparkcipher.entity.vo.PhoneCodeVo;
+import top.kirisamemarisa.sparkcipher.entity.vo.SendCodeVo;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.util.SecurityUtils;
 
@@ -59,11 +59,26 @@ public class LoginController {
      */
     @GetMapping("/getCodePhone")
     public MrsResult<?> getCodePhone(@RequestParam(name = "phoneNo") String phoneNo) {
-        PhoneCodeVo phoneCodeVo = loginService.sendCodePhone(phoneNo);
-        if (!phoneCodeVo.isStatus()) return MrsResult.failed(phoneCodeVo.getMsg());
-        System.out.println("验证码: " + phoneCodeVo.getCode());
-        return MrsResult.ok(phoneCodeVo.getMsg());
+        SendCodeVo sendCodeVo = loginService.sendCodePhone(phoneNo);
+        if (!sendCodeVo.isStatus()) return MrsResult.failed(sendCodeVo.getMsg());
+        System.out.println("手机号: " + phoneNo + " ,验证码: " + sendCodeVo.getCode());
+        return MrsResult.ok(sendCodeVo.getMsg());
     }
+
+    /**
+     * 向对应手机号发送验证码
+     *
+     * @param email 目标手机号
+     * @return 发送结果
+     */
+    @GetMapping("/getCodeEmail")
+    public MrsResult<?> getCodeEmail(@RequestParam(name = "email") String email) {
+        SendCodeVo sendCodeVo = loginService.sendEmailCode(email);
+        if (!sendCodeVo.isStatus()) return MrsResult.failed(sendCodeVo.getMsg());
+        System.out.println("邮箱: " + email + " ,验证码: " + sendCodeVo.getCode());
+        return MrsResult.ok(sendCodeVo.getMsg());
+    }
+
 
     /**
      * 通过账号密码的方式登录

@@ -53,12 +53,10 @@ public class MrsEmailUtil {
     }
 
 
-    public void sendCodeEmail(String target,String userName, String code){
+    public void sendCodeEmail(String target, String code){
         Map<String, String> map = new HashMap<>();
-        map.put("userName", userName);
         map.put("code", code);
-        sendHTMLEmail(map, target, "验证码", "login-template");
-
+        sendHTMLEmail(map, target, "登录验证码", "login-template");
     }
 
     /**

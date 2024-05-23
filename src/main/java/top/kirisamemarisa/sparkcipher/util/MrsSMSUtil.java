@@ -70,10 +70,13 @@ public class MrsSMSUtil {
         client.close();
         String res = JSONObject.toJSONString(resp.getBody());
         JSONObject body = JSONObject.parseObject(res);
-        System.out.println("Body: "+body);
-        System.out.println("手机号: "+phoneNo+", 验证码: "+code);
         String resCode = body.getString("code");
-        return "OK".equals(resCode);
+        boolean result = "OK".equals(resCode);
+        if(!result) {
+            System.out.println("发送失败了...");
+            System.out.println("Body: " + body);
+        }
+        return result;
     }
 
     public static void main(String[] args) throws Exception {

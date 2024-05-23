@@ -3,7 +3,7 @@ package top.kirisamemarisa.sparkcipher.service;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
-import top.kirisamemarisa.sparkcipher.entity.vo.PhoneCodeVo;
+import top.kirisamemarisa.sparkcipher.entity.vo.SendCodeVo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,9 +35,17 @@ public interface ILoginService {
      * 发送验证码
      *
      * @param phoneNo 手机号
-     * @return 验证码
+     * @return 发送结果
      */
-    PhoneCodeVo sendCodePhone(String phoneNo);
+    SendCodeVo sendCodePhone(String phoneNo);
+
+    /**
+     * 发送邮箱验证码
+     *
+     * @param email 邮箱
+     * @return  发送结果
+     */
+    SendCodeVo sendEmailCode(String email);
 
     /**
      * 根据key查询是否有重复项

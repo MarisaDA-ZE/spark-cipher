@@ -7,10 +7,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
-import top.kirisamemarisa.sparkcipher.entity.dto.PhoneCodeDto;
+import top.kirisamemarisa.sparkcipher.entity.dto.SendCodeDto;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.entity.User;
-import top.kirisamemarisa.sparkcipher.entity.vo.PhoneCodeVo;
+import top.kirisamemarisa.sparkcipher.entity.vo.SendCodeVo;
 import top.kirisamemarisa.sparkcipher.entity.vo.UserVo;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 import top.kirisamemarisa.sparkcipher.exception.CodeExpiredException;
@@ -19,11 +19,8 @@ import top.kirisamemarisa.sparkcipher.exception.NotFoundException;
 import top.kirisamemarisa.sparkcipher.exception.UnauthorizedException;
 import top.kirisamemarisa.sparkcipher.service.ILoginService;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
-import top.kirisamemarisa.sparkcipher.util.MrsUtil;
-import top.kirisamemarisa.sparkcipher.util.SaltGenerator;
-import top.kirisamemarisa.sparkcipher.util.SnowflakeUtils;
+import top.kirisamemarisa.sparkcipher.util.*;
 import top.kirisamemarisa.sparkcipher.util.encrypto.md5.MD5Utils;
-import top.kirisamemarisa.sparkcipher.util.TokenUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static top.kirisamemarisa.sparkcipher.common.Constants.*;
@@ -54,6 +52,9 @@ public class ILoginServiceImpl implements ILoginService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private MrsEmailUtil emailUtil;
 
 
     @Override
@@ -121,44 +122,53 @@ public class ILoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public PhoneCodeVo sendCodePhone(String phoneNo) {
-        if (StringUtils.isBlank(phoneNo)) return PhoneCodeVo.failed("手机号为空！");
-        if (!MrsUtil.verifyPhoneNo(phoneNo)) return PhoneCodeVo.failed("手机号格式错误！");
+    public SendCodeVo sendCodePhone(String phoneNo) {
+        if (StringUtils.isBlank(phoneNo)) return SendCodeVo.failed("手机号为空！");
+        if (!MrsUtil.verifyPhoneNo(phoneNo)) return SendCodeVo.failed("手机号格式错误！");
         // 手机号已经正确了
         Object op = redisTemplate.opsForValue().get(phoneNo + PHONE_VERIFY_SUFFIX);
 
         // 之前没有发送过验证码
         if (ObjectUtils.isEmpty(op)) {
-            PhoneCodeDto codeDto = new PhoneCodeDto();
+            SendCodeDto codeDto = new SendCodeDto();
             String code = MrsUtil.getRandomCodeNum(6);
-            codeDto.setPhoneNo(phoneNo);
+            codeDto.setAccount(phoneNo);
             codeDto.setCode(code);
             codeDto.setLastSendTime(System.currentTimeMillis());
             codeDto.setRemainingCount(PHONE_CODE_COUNT);
-            redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
-            return PhoneCodeVo.success(phoneNo, code);
+            try {
+                boolean isSend = MrsSMSUtil.sendPhoneCode(phoneNo, code);
+                if (!isSend)  return SendCodeVo.failed("发送失败！");
+                redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto,
+                        ONE_DAY_SECONDS,
+                        TimeUnit.SECONDS);
+            } catch (ExecutionException | InterruptedException e) {
+                return SendCodeVo.failed("发送失败！");
+            }
+
+            return SendCodeVo.success(phoneNo, code);
         }
 
-        if (!(op instanceof PhoneCodeDto)) {
+        if (!(op instanceof SendCodeDto)) {
             throw new InternalServerErrorException("对象转换失败！");
         }
 
         // 之前有发送过验证码
-        PhoneCodeDto codeDto = (PhoneCodeDto) op;
+        SendCodeDto codeDto = (SendCodeDto) op;
         long now = System.currentTimeMillis();
         long lastSend = codeDto.getLastSendTime();
 
         // 不一样说明次数不在同一天，次数重置
-        if (!isSameDay(now, lastSend)) {
+        if (isSameDay(now, lastSend)) {
             codeDto.setRemainingCount(PHONE_CODE_COUNT);
         }
 
         if (codeDto.getRemainingCount() <= 0) {
-            return PhoneCodeVo.failed("今日发送次数已用完！");
+            return SendCodeVo.failed("今日发送次数已用完！");
         }
 
         if (now - lastSend < 1000 * 60) {
-            return PhoneCodeVo.failed("请勿重复请求！");
+            return SendCodeVo.failed("请勿重复请求！");
         }
 
         String randomCode = MrsUtil.getRandomCodeNum(6);
@@ -166,8 +176,66 @@ public class ILoginServiceImpl implements ILoginService {
         codeDto.setCode(randomCode);
         codeDto.setRemainingCount(codeDto.getRemainingCount() - 1);
         codeDto.setLastSendTime(now);
-        redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
-        return PhoneCodeVo.success(phoneNo, randomCode);
+        try {
+            boolean isSend = MrsSMSUtil.sendPhoneCode(phoneNo, randomCode);
+            if(!isSend)return SendCodeVo.failed("发送失败！");
+            redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return SendCodeVo.failed("发送失败！");
+        }
+        return SendCodeVo.success(phoneNo, randomCode);
+    }
+
+    @Override
+    public SendCodeVo sendEmailCode(String email) {
+        if (StringUtils.isBlank(email)) return SendCodeVo.failed("邮箱号为空！");
+        if (!MrsUtil.verifyEmail(email)) return SendCodeVo.failed("邮箱号格式错误！");
+        // 邮箱已经正确了
+        Object oe = redisTemplate.opsForValue().get(email + EMAIL_VERIFY_SUFFIX);
+
+        // 之前没有发送过验证码
+        if (ObjectUtils.isEmpty(oe)) {
+            SendCodeDto codeDto = new SendCodeDto();
+            String code = MrsUtil.getRandomCodeStr(8);
+            codeDto.setAccount(email);
+            codeDto.setCode(code);
+            codeDto.setLastSendTime(System.currentTimeMillis());
+            codeDto.setRemainingCount(EMAIL_CODE_COUNT);
+            emailUtil.sendCodeEmail(email, code);
+            redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
+                    codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
+            return SendCodeVo.success(email, code);
+        }
+
+        if (!(oe instanceof SendCodeDto)) {
+            throw new InternalServerErrorException("对象转换失败！");
+        }
+
+        // 之前有发送过验证码
+        SendCodeDto codeDto = (SendCodeDto) oe;
+        long now = System.currentTimeMillis();
+        long lastSend = codeDto.getLastSendTime();
+
+        // 不一样说明次数不在同一天，次数重置
+        if (isSameDay(now, lastSend)) {
+            codeDto.setRemainingCount(EMAIL_CODE_COUNT);
+        }
+
+        if (codeDto.getRemainingCount() <= 0) {
+            return SendCodeVo.failed("今日发送次数已用完！");
+        }
+
+        String randomCode = MrsUtil.getRandomCodeStr(8);
+        // 不用设置手机号，能拿到对象说明肯定是存在手机号的
+        codeDto.setCode(randomCode);
+        codeDto.setRemainingCount(codeDto.getRemainingCount() - 1);
+        codeDto.setLastSendTime(now);
+        emailUtil.sendCodeEmail(email, randomCode);
+        redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
+                codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
+
+        return SendCodeVo.success(email, randomCode);
     }
 
     @Override
@@ -219,11 +287,11 @@ public class ILoginServiceImpl implements ILoginService {
         Object op = redisTemplate.opsForValue().get(phoneNo + PHONE_VERIFY_SUFFIX);
         if (ObjectUtils.isEmpty(op)) throw new CodeExpiredException("验证码已过期！");
 
-        if (!(op instanceof PhoneCodeDto)) {
+        if (!(op instanceof SendCodeDto)) {
             throw new InternalServerErrorException("对象转换失败！");
         }
 
-        PhoneCodeDto codeDto = (PhoneCodeDto) op;
+        SendCodeDto codeDto = (SendCodeDto) op;
         String rdCode = codeDto.getCode();
         if (rdCode == null || System.currentTimeMillis() - codeDto.getLastSendTime() > PHONE_CODE_EXPIRE_TIME) {
             throw new CodeExpiredException("验证码已过期！");
@@ -268,7 +336,7 @@ public class ILoginServiceImpl implements ILoginService {
     private boolean isSameDay(long time1, long time2) {
         LocalDateTime date1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(time1), ZoneId.systemDefault());
         LocalDateTime date2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(time2), ZoneId.systemDefault());
-        return ChronoUnit.DAYS.between(date1, date2) == 0;
+        return ChronoUnit.DAYS.between(date1, date2) != 0;
     }
 
 }
