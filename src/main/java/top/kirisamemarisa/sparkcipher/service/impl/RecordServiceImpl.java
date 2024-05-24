@@ -40,14 +40,13 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record> impleme
         String value = title.getValue();
         Record record = recordVo.toDto();
         record.setSearchText(value);
-        System.out.println("加密前: " + record);
         record.encryptField();
         record.setId(dbRecord.getId());
 
         // 设置更新时间
         record.setUpdateBy(authUser.getId());
         record.setUpdateTime(new Date());
-        System.out.println("更新前: " + record);
+        // System.out.println("更新前: " + record);
         return baseMapper.updateRecordById(record);
     }
 

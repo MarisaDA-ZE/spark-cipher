@@ -62,7 +62,7 @@ public class RecordController {
                                        @RequestParam(name = "keyWords", defaultValue = "") String text) {
         System.out.println(current + ", " + size + ", " + text);
         User authUser = securityUtils.getAuthUser();
-        System.out.println(authUser);
+        System.out.println("权限用户: " + authUser);
         String uid = authUser.getId();
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USER_ID", uid);
@@ -70,21 +70,21 @@ public class RecordController {
         IPage<Record> dbPage = recordService.page(new Page<>(current, size), queryWrapper);
         dbPage.getRecords().forEach(Record::decryptField);
         IPage<RecordVo> page = dbPage.convert(Record::toVo);
-        page.getRecords().forEach(System.out::println);
+        // page.getRecords().forEach(System.out::println);
         return MrsResult.ok(page);
     }
 
     @GetMapping("/getRecordById")
     public MrsResult<?> getRecordById(@RequestParam(name = "id") String id) {
         User authUser = securityUtils.getAuthUser();
-        System.out.println(authUser);
+        System.out.println("权限用户: " + authUser);
         String uid = authUser.getId();
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("USER_ID", uid);
         queryWrapper.eq("ID", id);
         Record record = recordService.getOne(queryWrapper);
         record.decryptField();
-        System.out.println("查询一个: " + record);
+        // System.out.println("查询一个: " + record);
         return MrsResult.ok(record.toVo());
     }
 
@@ -115,9 +115,7 @@ public class RecordController {
         record.setCreateBy(uid);
         record.setUpdateTime(null);
         record.setUpdateBy(null);
-        System.out.println("加密前: " + record);
         record.encryptField();
-        System.out.println("加密后: " + record);
         boolean save = recordService.save(record);
         return save ? MrsResult.ok() : MrsResult.failed();
     }
@@ -130,7 +128,6 @@ public class RecordController {
      */
     @PostMapping("/edit")
     public MrsResult<?> edit(@RequestBody RecordVo recordVo) {
-        System.out.println(recordVo);
         boolean isUpdate = recordService.updateRecordById(recordVo);
         return isUpdate ? MrsResult.ok() : MrsResult.failed("更新失败！");
     }

@@ -79,15 +79,14 @@ public class ILoginServiceImpl implements ILoginService {
                     return "验证码已过期，请重新发送";
                 }
                 String rCode = codeDto.getCode();
-                if(!(rCode+ "").equals(loginVo.getPhoneCode())){
-                    return "手机验证码错误";
-                }else {
-                    // 验证码正确，更新掉使其不能使用
-                    codeDto.setCode(rCode + USED_SUFFIX);
-                    redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX,
-                            codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
-                }
+                boolean used = codeDto.isUsed();
+                if(used)return "验证码已过期";
+                if(!(rCode+ "").equals(loginVo.getPhoneCode())) return "手机验证码错误";
 
+                // 验证码正确，更新掉使其不能使用
+                codeDto.setUsed(true);
+                redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX,
+                        codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
             }catch (Exception e){
                 return "服务器内部错误，请联系管理员";
             }
@@ -105,17 +104,15 @@ public class ILoginServiceImpl implements ILoginService {
                     return "验证码已过期，请重新发送";
                 }
                 String rCode = codeDto.getCode();
-                boolean isUsed = codeDto.isUsed();  // true: 已使用, false: 未使用
-
+                boolean used = codeDto.isUsed();  // true: 已使用, false: 未使用
+                if(used) return "验证码已过期";
                 // 不区分大小写，redis中的code本身就是全大写
-                if(!(rCode+ "").equals((loginVo.getEmailCode() + "").toUpperCase()) && !isUsed){
-                    return "邮箱验证码错误";
-                }else {
-                    // 验证码正确，更新使用状态
-                    codeDto.setUsed(true);
-                    redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
-                            codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
-                }
+                if(!(rCode+ "").equals((loginVo.getEmailCode() + "").toUpperCase())) return "邮箱验证码错误";
+
+                // 验证码正确，更新使用状态
+                codeDto.setUsed(true);
+                redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
+                        codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
             }catch (Exception e){
                 return "服务器内部错误，请联系管理员";
             }
@@ -123,8 +120,9 @@ public class ILoginServiceImpl implements ILoginService {
 
         User queryUser = new User();
         queryUser.setAccount(account);
-        queryUser.setPhone(phoneNo);
-        queryUser.setEmail(email);
+        if(phoneNo != null) queryUser.setPhone(phoneNo);
+        if(email != null) queryUser.setEmail(email);
+        System.out.println("查询用户: " + queryUser);
         int keyCount = this.getCountByKey(queryUser);
         if (keyCount > 0) return "账户已存在";
 
