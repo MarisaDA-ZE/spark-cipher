@@ -11,8 +11,9 @@ public interface ICertificationService {
 
     /**
      * 验证token有效性
+     *
      * @param token 前端token
-     * @return  有效信息
+     * @return 有效信息
      */
     CertLoginDto verifyTokenInfo(String token);
 }

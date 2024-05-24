@@ -11,8 +11,9 @@ public interface ICryptoService {
 
     /**
      * 获取公钥
-     * @param fingerPrint   客户端指纹
-     * @return  预置私钥签名后的公钥
+     *
+     * @param fingerPrint 客户端指纹
+     * @return 预置私钥签名后的公钥
      */
     String getPublicKey(String fingerPrint);
 

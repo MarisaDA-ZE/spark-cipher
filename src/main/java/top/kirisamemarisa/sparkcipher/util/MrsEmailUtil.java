@@ -1,4 +1,5 @@
 package top.kirisamemarisa.sparkcipher.util;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -7,6 +8,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.annotation.Resource;
@@ -15,9 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 发送邮件工具类 MailUtil
  * @Author Marisa
- * @Description MrsEmailUtil.描述
+ * @Description 邮件工具类
  * @Date 2024/5/23
  */
 @Service
@@ -33,7 +34,8 @@ public class MrsEmailUtil {
 
     /**
      * 简单文本邮件
-     * @param target 收件人
+     *
+     * @param target  收件人
      * @param subject 主题
      * @param content 内容
      */
@@ -53,7 +55,7 @@ public class MrsEmailUtil {
     }
 
 
-    public void sendCodeEmail(String target, String code){
+    public void sendCodeEmail(String target, String code) {
         Map<String, String> map = new HashMap<>();
         map.put("code", code);
         sendHTMLEmail(map, target, "登录验证码", "login-template");
@@ -61,10 +63,11 @@ public class MrsEmailUtil {
 
     /**
      * 根据模板发送邮件
-     * @param ctx       邮件内容
-     * @param target    收件人邮箱
-     * @param subject   邮件主题（标题）
-     * @param template  模板路径（不带后缀名）
+     *
+     * @param ctx      邮件内容
+     * @param target   收件人邮箱
+     * @param subject  邮件主题（标题）
+     * @param template 模板路径（不带后缀名）
      */
     public void sendHTMLEmail(Map<String, ?> ctx, String target, String subject, String template) {
         Context context = new Context();
@@ -89,9 +92,10 @@ public class MrsEmailUtil {
 
     /**
      * 带附件的邮件
-     * @param to 收件人
-     * @param subject 主题
-     * @param content 内容
+     *
+     * @param to       收件人
+     * @param subject  主题
+     * @param content  内容
      * @param filePath 附件
      */
     public void sendAttachmentsMail(String to, String subject, String content, String filePath) {

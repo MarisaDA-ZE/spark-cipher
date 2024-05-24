@@ -43,7 +43,7 @@ public interface ILoginService {
      * 发送邮箱验证码
      *
      * @param email 邮箱
-     * @return  发送结果
+     * @return 发送结果
      */
     SendCodeVo sendEmailCode(String email);
 

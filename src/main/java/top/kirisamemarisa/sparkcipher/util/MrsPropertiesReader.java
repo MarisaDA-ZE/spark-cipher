@@ -1,4 +1,5 @@
 package top.kirisamemarisa.sparkcipher.util;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -16,10 +17,10 @@ public class MrsPropertiesReader {
 
     /**
      * 装载属性文件
+     * <p>注意：这个方法很可能不支持多线程，多个线程同时调用装载不同的值可能要遭</p>
      *
      * @param fileName 文件路径
      * @param clazz    目标类
-     * <p>注意：这个方法很可能不支持多线程，多个线程同时调用装载不同的值可能要遭</p>
      */
     public static <T> void loadProperties(String fileName, Class<T> clazz) {
         Resource resource = new ClassPathResource(fileName);

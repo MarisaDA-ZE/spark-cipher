@@ -1,4 +1,5 @@
 package top.kirisamemarisa.sparkcipher.util;
+
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.auth.credentials.Credential;
 import com.aliyun.auth.credentials.provider.StaticCredentialProvider;
@@ -24,13 +25,13 @@ public class MrsSMSUtil {
     private static String ACCESS_KEY_ID;
     @StaticValue("mrs.alibaba.access-key-secret")
     private static String ACCESS_KEY_SECRET;
+    @StaticValue("mrs.alibaba.verify-code-template-name")
+    private static String TEMPLATE_CODE;
 
-    private static final String TEMPLATE_CODE = "SMS_465971659";
-
-     static {
-        String fileName = "private/mrs-alibaba.properties";
+    static {
+        String fileName = "keys/mrs-alibaba.properties";
         MrsPropertiesReader.loadProperties(fileName, MrsSMSUtil.class);
-     }
+    }
 
 
     private static AsyncClient getClient() {
@@ -51,10 +52,11 @@ public class MrsSMSUtil {
 
     /**
      * 向指定手机号发送验证码
-     * @param phoneNo   手机号
-     * @param code  验证码
-     * @return  是否发送成功
-     * @throws ExecutionException .
+     *
+     * @param phoneNo 手机号
+     * @param code    验证码
+     * @return 是否发送成功
+     * @throws ExecutionException   .
      * @throws InterruptedException .
      */
     public static boolean sendPhoneCode(String phoneNo, String code) throws ExecutionException, InterruptedException {
@@ -63,7 +65,7 @@ public class MrsSMSUtil {
                 .signName(ACCESS_NAME)
                 .templateCode(TEMPLATE_CODE)
                 .phoneNumbers(phoneNo)
-                .templateParam("{\"code\":\""+code+"\"}")
+                .templateParam("{\"code\":\"" + code + "\"}")
                 .build();
         CompletableFuture<SendSmsResponse> response = client.sendSms(sendSmsRequest);
         SendSmsResponse resp = response.get();
@@ -72,7 +74,7 @@ public class MrsSMSUtil {
         JSONObject body = JSONObject.parseObject(res);
         String resCode = body.getString("code");
         boolean result = "OK".equals(resCode);
-        if(!result) {
+        if (!result) {
             System.out.println("发送失败了...");
             System.out.println("Body: " + body);
         }

@@ -1,19 +1,14 @@
 package top.kirisamemarisa.sparkcipher.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
 import top.kirisamemarisa.sparkcipher.common.MrsResult;
 import top.kirisamemarisa.sparkcipher.entity.User;
+import top.kirisamemarisa.sparkcipher.entity.vo.UserVo;
 import top.kirisamemarisa.sparkcipher.service.IUserService;
 import top.kirisamemarisa.sparkcipher.util.*;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @Author Marisa
@@ -30,23 +25,30 @@ public class UserController {
     @Resource
     private SecurityUtils securityUtils;
 
-
+    /**
+     * 测试接口
+     *
+     * @return .
+     */
     @GetMapping("/test")
     public MrsResult<?> test() {
         User authUser = securityUtils.getAuthUser();
-        System.out.println(authUser);
-
+        System.out.println("登录用户: " + authUser);
         return MrsResult.ok();
     }
 
-    @GetMapping("/list")
-    public MrsResult<?> list() {
-        List<User> list = userService.list();
-        list.forEach(System.out::println);
-        return MrsResult.ok(list);
+    /**
+     * 获取当前登录用户的信息
+     * @return  userVo
+     */
+    @GetMapping("/getUserInfo")
+    public MrsResult<?> getUserInfo() {
+        User authUser = securityUtils.getAuthUser();
+        System.out.println("登录用户: " + authUser);
+        String uid = authUser.getId();
+        User dbUser = userService.getById(uid);
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(dbUser, userVo);
+        return MrsResult.ok(userVo);
     }
-
-
-
-
 }
