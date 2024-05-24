@@ -3,7 +3,6 @@ package top.kirisamemarisa.sparkcipher.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
@@ -11,7 +10,6 @@ import top.kirisamemarisa.sparkcipher.entity.dto.SendCodeDto;
 import top.kirisamemarisa.sparkcipher.entity.vo.LoginVo;
 import top.kirisamemarisa.sparkcipher.entity.User;
 import top.kirisamemarisa.sparkcipher.entity.vo.SendCodeVo;
-import top.kirisamemarisa.sparkcipher.entity.vo.UserVo;
 import top.kirisamemarisa.sparkcipher.entity.resp.MrsLResp;
 import top.kirisamemarisa.sparkcipher.exception.CodeExpiredException;
 import top.kirisamemarisa.sparkcipher.exception.InternalServerErrorException;
@@ -377,9 +375,7 @@ public class ILoginServiceImpl implements ILoginService {
         redisTemplate.opsForValue().set(uid + USER_SUFFIX, user, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
         // 保存token
         redisTemplate.opsForValue().set(uid + TOKEN_SUFFIX, token, TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
-        UserVo userVo = new UserVo();
-        BeanUtils.copyProperties(user, userVo);
-        return new MrsLResp(userVo, token);
+        return new MrsLResp(user.toVo(), token);
     }
 
     /**

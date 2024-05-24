@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.beans.BeanUtils;
 import top.kirisamemarisa.sparkcipher.annotations.UniqueField;
 import top.kirisamemarisa.sparkcipher.common.Constants;
+import top.kirisamemarisa.sparkcipher.entity.vo.UserVo;
 
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -182,5 +184,21 @@ public class User {
         Pattern pattern = Pattern.compile(regExp);
         Matcher matcher = pattern.matcher(target);
         return matcher.matches();
+    }
+
+    /**
+     * dto转vo
+     * @return  userVo
+     */
+    public UserVo toVo(){
+        UserVo userVo = new UserVo();
+        System.out.println(this.getGender());
+        BeanUtils.copyProperties(this, userVo);
+        Date created = this.getCreateTime();
+        Date updated = this.getUpdateTime();
+        userVo.setGender(this.getGender().toString());
+        if(created != null) userVo.setCreateTime(created.getTime());
+        if(updated != null) userVo.setUpdateTime(updated.getTime());
+        return userVo;
     }
 }

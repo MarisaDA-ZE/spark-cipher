@@ -21,8 +21,8 @@ public class UserVo {
     private Integer level;      // 等级
     private String email;       // 邮箱
     private String avatar;      // 头像
-    private Date createTime;    // 创建时间
+    private Long createTime;    // 创建时间
     private String createBy;    // 创建者ID
-    private Date updateTime;    // 最近更新时间
+    private Long updateTime;    // 最近更新时间
     private String updateBy;    // 更新者ID
 }

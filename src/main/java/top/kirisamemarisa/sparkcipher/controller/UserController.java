@@ -47,8 +47,6 @@ public class UserController {
         System.out.println("登录用户: " + authUser);
         String uid = authUser.getId();
         User dbUser = userService.getById(uid);
-        UserVo userVo = new UserVo();
-        BeanUtils.copyProperties(dbUser, userVo);
-        return MrsResult.ok(userVo);
+        return MrsResult.ok(dbUser.toVo());
     }
 }
