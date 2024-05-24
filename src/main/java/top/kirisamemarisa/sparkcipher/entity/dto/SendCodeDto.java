@@ -15,8 +15,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SendCodeDto {
-    private String account;     // 手机号
-    private String code;        // 最新的验证码
-    private int remainingCount; // 剩余发送次数
-    private long lastSendTime;  // 上次发送时间
+    private String account;      // 手机号
+    private String code;         // 最新的验证码
+    private boolean used = false;// 是否已经使用
+    private int remainingCount;  // 剩余发送次数
+    private long lastSendTime;   // 上次发送时间
 }

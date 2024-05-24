@@ -105,12 +105,14 @@ public class ILoginServiceImpl implements ILoginService {
                     return "验证码已过期，请重新发送";
                 }
                 String rCode = codeDto.getCode();
+                boolean isUsed = codeDto.isUsed();  // true: 已使用, false: 未使用
+
                 // 不区分大小写，redis中的code本身就是全大写
-                if(!(rCode+ "").equals((loginVo.getEmailCode() + "").toUpperCase())){
+                if(!(rCode+ "").equals((loginVo.getEmailCode() + "").toUpperCase()) && !isUsed){
                     return "邮箱验证码错误";
                 }else {
-                    // 验证码正确，更新掉使其不能使用
-                    codeDto.setCode(rCode + USED_SUFFIX);
+                    // 验证码正确，更新使用状态
+                    codeDto.setUsed(true);
                     redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
                             codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
                 }
@@ -174,6 +176,40 @@ public class ILoginServiceImpl implements ILoginService {
     }
 
     @Override
+    public MrsLResp loginByPhone(LoginVo loginVo, HttpServletRequest req) {
+        System.out.println(loginVo);
+        String phoneNo = loginVo.getPhoneNo();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("PHONE", phoneNo);
+        User dbUser = userService.getOne(queryWrapper);
+        System.out.println(dbUser);
+        if (dbUser == null) throw new NotFoundException("手机号不存在！");
+        Object op = redisTemplate.opsForValue().get(phoneNo + PHONE_VERIFY_SUFFIX);
+        if (ObjectUtils.isEmpty(op)) throw new CodeExpiredException("验证码已过期！");
+
+        if (!(op instanceof SendCodeDto)) {
+            throw new InternalServerErrorException("服务器内部错误，请联系管理员");
+        }
+
+        SendCodeDto codeDto = (SendCodeDto) op;
+        String rdCode = codeDto.getCode();
+        if (rdCode == null || System.currentTimeMillis() - codeDto.getLastSendTime() > PHONE_CODE_EXPIRE_TIME) {
+            throw new CodeExpiredException("验证码已过期！");
+        }
+
+        boolean used = codeDto.isUsed();
+        // 验证码相同则登录成功
+        if ((loginVo.getPhoneCode() + "").equals(rdCode) && !used) {
+            System.out.println("手机号验证码登录成功...");
+            // 作废该验证码
+            codeDto.setUsed(true);
+            redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
+            return loginSuccess(dbUser);
+        }
+        throw new UnauthorizedException("验证码不正确");
+    }
+
+    @Override
     public SendCodeVo sendCodePhone(String phoneNo) {
         if (StringUtils.isBlank(phoneNo)) return SendCodeVo.failed("手机号为空！");
         if (!MrsUtil.verifyPhoneNo(phoneNo)) return SendCodeVo.failed("手机号格式错误！");
@@ -227,6 +263,7 @@ public class ILoginServiceImpl implements ILoginService {
         // 不用设置手机号，能拿到对象说明肯定是存在手机号的
         codeDto.setCode(randomCode);
         codeDto.setRemainingCount(codeDto.getRemainingCount() - 1);
+        codeDto.setUsed(false);
         codeDto.setLastSendTime(now);
         try {
             boolean isSend = MrsSMSUtil.sendPhoneCode(phoneNo, randomCode);
@@ -282,6 +319,7 @@ public class ILoginServiceImpl implements ILoginService {
         // 不用设置手机号，能拿到对象说明肯定是存在手机号的
         codeDto.setCode(randomCode);
         codeDto.setRemainingCount(codeDto.getRemainingCount() - 1);
+        codeDto.setUsed(false);
         codeDto.setLastSendTime(now);
         emailUtil.sendCodeEmail(email, randomCode);
         redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
@@ -325,38 +363,6 @@ public class ILoginServiceImpl implements ILoginService {
             }
         }
         return result;
-    }
-
-    @Override
-    public MrsLResp loginByPhone(LoginVo loginVo, HttpServletRequest req) {
-        System.out.println(loginVo);
-        String phoneNo = loginVo.getPhoneNo();
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("PHONE", phoneNo);
-        User dbUser = userService.getOne(queryWrapper);
-        System.out.println(dbUser);
-        if (dbUser == null) throw new NotFoundException("手机号不存在！");
-        Object op = redisTemplate.opsForValue().get(phoneNo + PHONE_VERIFY_SUFFIX);
-        if (ObjectUtils.isEmpty(op)) throw new CodeExpiredException("验证码已过期！");
-
-        if (!(op instanceof SendCodeDto)) {
-            throw new InternalServerErrorException("对象转换失败！");
-        }
-
-        SendCodeDto codeDto = (SendCodeDto) op;
-        String rdCode = codeDto.getCode();
-        if (rdCode == null || System.currentTimeMillis() - codeDto.getLastSendTime() > PHONE_CODE_EXPIRE_TIME) {
-            throw new CodeExpiredException("验证码已过期！");
-        }
-        // 验证码相同则登录成功
-        if ((loginVo.getPhoneCode() + "").equals(rdCode)) {
-            System.out.println("手机号验证码登录成功...");
-            // 作废该验证码
-            codeDto.setCode(null);
-            redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX, codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
-            return loginSuccess(dbUser);
-        }
-        throw new UnauthorizedException("验证码不正确");
     }
 
     /**
