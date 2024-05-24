@@ -20,7 +20,7 @@ public class Constants {
     public static final Integer EMAIL_CODE_COUNT = 1000;// 15
     // 手机验证码过期时间(15分钟)
     public static final Integer PHONE_CODE_EXPIRE_TIME = 1000 * 60 * 15;
-
+    public static final Integer EMAIL_CODE_EXPIRE_TIME = 1000 * 60 * 15;
     // 一天所有的秒数
     public static final Integer ONE_DAY_SECONDS = 60 * 60 * 24;
 

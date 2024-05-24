@@ -67,6 +67,48 @@ public class ILoginServiceImpl implements ILoginService {
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) return "请填写用户名密码";
         if (StringUtils.isBlank(phoneNo) && StringUtils.isBlank(email)) return "请填写手机号或邮箱";
 
+        // 填了手机号就要校验 手机验证码
+        if(StringUtils.isNotBlank(phoneNo)){
+            Object pop = redisTemplate.opsForValue().get(phoneNo + PHONE_VERIFY_SUFFIX);
+            if(pop == null) return "手机未校验";
+            try {
+                SendCodeDto codeDto = (SendCodeDto) pop;
+                long now = System.currentTimeMillis();
+                long prevSend = codeDto.getLastSendTime();
+                if(now - prevSend > PHONE_CODE_EXPIRE_TIME){
+                    return "验证码已过期，请重新发送";
+                }
+                String rCode = codeDto.getCode();
+                if(!(rCode+ "").equals(loginVo.getPhoneCode())){
+                    return "手机验证码错误";
+                }
+
+            }catch (Exception e){
+                return "服务器内部错误，请联系管理员";
+            }
+        }
+
+        // 填了邮箱就要校验 邮箱验证码
+        if(StringUtils.isNotBlank(email)){
+            Object pop = redisTemplate.opsForValue().get(email + EMAIL_VERIFY_SUFFIX);
+            if(pop == null) return "邮箱未校验";
+            try {
+                SendCodeDto codeDto = (SendCodeDto) pop;
+                long now = System.currentTimeMillis();
+                long prevSend = codeDto.getLastSendTime();
+                if(now - prevSend > EMAIL_CODE_EXPIRE_TIME){
+                    return "验证码已过期，请重新发送";
+                }
+                String rCode = codeDto.getCode();
+                if(!(rCode+ "").equals(loginVo.getEmailCode())){
+                    return "邮箱验证码错误";
+                }
+
+            }catch (Exception e){
+                return "服务器内部错误，请联系管理员";
+            }
+        }
+
         User queryUser = new User();
         queryUser.setAccount(account);
         queryUser.setPhone(phoneNo);
@@ -297,7 +339,7 @@ public class ILoginServiceImpl implements ILoginService {
             throw new CodeExpiredException("验证码已过期！");
         }
         // 验证码相同则登录成功
-        if ((loginVo.getVerifyCode() + "").equals(rdCode)) {
+        if ((loginVo.getPhoneCode() + "").equals(rdCode)) {
             System.out.println("手机号验证码登录成功...");
             // 作废该验证码
             codeDto.setCode(null);
