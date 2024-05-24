@@ -19,8 +19,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class MrsSMSUtil {
 
-    @StaticValue("mrs.alibaba.access-name")
-    private static String ACCESS_NAME;
+    private static final String ACCESS_NAME = "火花密码测";
     @StaticValue("mrs.alibaba.access-key-id")
     private static String ACCESS_KEY_ID;
     @StaticValue("mrs.alibaba.access-key-secret")
@@ -76,6 +75,8 @@ public class MrsSMSUtil {
         boolean result = "OK".equals(resCode);
         if (!result) {
             System.out.println("发送失败了...");
+            System.out.println("签名: "+ ACCESS_NAME);
+            System.out.println("模板: "+ TEMPLATE_CODE);
             System.out.println("Body: " + body);
         }
         return result;
