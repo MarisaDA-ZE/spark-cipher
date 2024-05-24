@@ -27,6 +27,7 @@ public class Constants {
     // redis中token类的后缀
     public static final String USER_SUFFIX = ".user";
     public static final String TOKEN_SUFFIX = ".token";
+    public static final String USED_SUFFIX = ".used";
     public static final String PHONE_VERIFY_SUFFIX = ".phone-verify-code";
     public static final String EMAIL_VERIFY_SUFFIX = ".email-verify-code";
 

@@ -81,6 +81,11 @@ public class ILoginServiceImpl implements ILoginService {
                 String rCode = codeDto.getCode();
                 if(!(rCode+ "").equals(loginVo.getPhoneCode())){
                     return "手机验证码错误";
+                }else {
+                    // 验证码正确，更新掉使其不能使用
+                    codeDto.setCode(rCode + USED_SUFFIX);
+                    redisTemplate.opsForValue().set(phoneNo + PHONE_VERIFY_SUFFIX,
+                            codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
                 }
 
             }catch (Exception e){
@@ -100,10 +105,15 @@ public class ILoginServiceImpl implements ILoginService {
                     return "验证码已过期，请重新发送";
                 }
                 String rCode = codeDto.getCode();
-                if(!(rCode+ "").equals(loginVo.getEmailCode())){
+                // 不区分大小写，redis中的code本身就是全大写
+                if(!(rCode+ "").equals((loginVo.getEmailCode() + "").toUpperCase())){
                     return "邮箱验证码错误";
+                }else {
+                    // 验证码正确，更新掉使其不能使用
+                    codeDto.setCode(rCode + USED_SUFFIX);
+                    redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
+                            codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
                 }
-
             }catch (Exception e){
                 return "服务器内部错误，请联系管理员";
             }
@@ -177,7 +187,7 @@ public class ILoginServiceImpl implements ILoginService {
             codeDto.setAccount(phoneNo);
             codeDto.setCode(code);
             codeDto.setLastSendTime(System.currentTimeMillis());
-            codeDto.setRemainingCount(PHONE_CODE_COUNT);
+            codeDto.setRemainingCount(PHONE_CODE_COUNT -1); // 算上本次发送
             try {
                 boolean isSend = MrsSMSUtil.sendPhoneCode(phoneNo, code);
                 if (!isSend)  return SendCodeVo.failed("发送失败！");
@@ -200,9 +210,9 @@ public class ILoginServiceImpl implements ILoginService {
         long now = System.currentTimeMillis();
         long lastSend = codeDto.getLastSendTime();
 
-        // 不一样说明次数不在同一天，次数重置
+        // 不一样说明次数不在同一天，次数重置(但要算上本次发送)
         if (isSameDay(now, lastSend)) {
-            codeDto.setRemainingCount(PHONE_CODE_COUNT);
+            codeDto.setRemainingCount(PHONE_CODE_COUNT -1);
         }
 
         if (codeDto.getRemainingCount() <= 0) {
@@ -243,7 +253,7 @@ public class ILoginServiceImpl implements ILoginService {
             codeDto.setAccount(email);
             codeDto.setCode(code);
             codeDto.setLastSendTime(System.currentTimeMillis());
-            codeDto.setRemainingCount(EMAIL_CODE_COUNT);
+            codeDto.setRemainingCount(EMAIL_CODE_COUNT -1);
             emailUtil.sendCodeEmail(email, code);
             redisTemplate.opsForValue().set(email + EMAIL_VERIFY_SUFFIX,
                     codeDto, ONE_DAY_SECONDS, TimeUnit.SECONDS);
@@ -256,12 +266,12 @@ public class ILoginServiceImpl implements ILoginService {
 
         // 之前有发送过验证码
         SendCodeDto codeDto = (SendCodeDto) oe;
-        long now = System.currentTimeMillis();
         long lastSend = codeDto.getLastSendTime();
+        long now = System.currentTimeMillis();
 
         // 不一样说明次数不在同一天，次数重置
         if (isSameDay(now, lastSend)) {
-            codeDto.setRemainingCount(EMAIL_CODE_COUNT);
+            codeDto.setRemainingCount(EMAIL_CODE_COUNT -1);
         }
 
         if (codeDto.getRemainingCount() <= 0) {
